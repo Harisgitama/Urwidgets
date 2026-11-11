@@ -47,6 +47,13 @@ The project is primarily developed and targeted for **Linux Mint with KDE Plasma
 
 ---
 
+
+## Screenshots
+
+
+![URWidgets Desktop Preview](docs/images/urwidgets-desktop.png)![URWidgets Desktop Preview](docs/images/urwidgets-preference.png)
+
+
 ## Download
 
 <p align="center">
