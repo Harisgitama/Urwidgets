@@ -1,0 +1,12 @@
+pub mod clock;
+pub mod alarms;
+pub mod calendar;
+pub mod weather;
+pub mod pomodoro;
+pub mod agenda;
+pub mod notes;
+pub mod photos;
+pub mod quick_actions;
+pub mod system_monitor;
+pub mod backgrounds;
+pub mod music;

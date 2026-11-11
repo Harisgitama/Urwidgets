@@ -1,0 +1,1222 @@
+# URWidgets — FINAL POLISH & FEATURE COMPLETION
+## Version: Finalization Release
+### Design Direction: Premium macOS-Inspired WidgetWall
+
+**Project:** URWidgets  
+**Platform:** Linux Mint + KDE Plasma 5  
+**Core:** Existing Rust backend  
+**Widget UI:** Existing native widget framework / QML where currently implemented  
+**Optional Settings Application:** Existing Tauri application  
+**Objective:** Finalize the visual design, eliminate unwanted hover effects, implement alarm functionality, add Notes and Todo widgets, and support custom image backgrounds for every widget.
+
+---
+
+# 1. ROLE AND MISSION
+
+Act as a senior desktop application engineer, Rust developer, QML/Qt specialist, macOS-inspired UI/UX designer, and Linux desktop integration engineer.
+
+You are continuing development of an existing working application called URWidgets.
+
+The application already has an established visual design and several functioning widgets.
+
+This task is the FINAL POLISH AND FEATURE COMPLETION stage.
+
+Do not rebuild URWidgets from scratch.
+
+Do not replace the existing application architecture unnecessarily.
+
+Do not remove functionality that already works.
+
+Your objective is to improve the current implementation while introducing the requested features with minimal additional resource consumption.
+
+The final product must feel like a polished macOS-inspired desktop widget environment.
+
+The guiding principles are:
+
+- Elegant.
+- Minimal.
+- Consistent.
+- Customizable.
+- Functional.
+- Lightweight.
+- Efficient.
+- Reliable.
+
+---
+
+# 2. PROJECT INSPECTION — BEFORE MODIFYING ANYTHING
+
+First, inspect the complete existing project.
+
+Understand the actual implementation rather than assuming its architecture.
+
+Inspect:
+
+- Rust backend.
+- Existing UI framework.
+- Tauri configuration, if present.
+- QML components, if present.
+- Plasma integration.
+- Theme engine.
+- Widget components.
+- Clock implementation.
+- Calendar implementation.
+- Weather implementation.
+- Pomodoro implementation.
+- Photo Frame.
+- Quick Actions.
+- System Monitor.
+- Existing IPC implementation.
+- SQLite database.
+- Configuration system.
+- Installation and packaging scripts.
+
+Determine which functionality is already implemented and which is incomplete.
+
+IMPORTANT:
+
+Preserve the existing architecture.
+
+If desktop widgets already use native QML/Plasma, retain that implementation.
+
+Do not migrate native widgets to Tauri WebViews just to introduce new functionality.
+
+If Tauri is already used for the Control Center, retain its existing role.
+
+Do not create one Tauri instance or Rust process for each widget.
+
+Use the existing shared backend and existing communication mechanisms.
+
+Before implementing anything, briefly report:
+
+1. Existing architecture.
+2. Existing functional features.
+3. Missing features.
+4. Files that need modifications.
+5. Proposed implementation strategy.
+
+After the inspection, proceed with implementation. Do not stop at architectural analysis alone.
+
+---
+
+# 3. UI FINALIZATION — REMOVE ALL UNWANTED HOVER EFFECTS
+
+This is a specific visual requirement.
+
+Currently, some widgets change their appearance when the mouse pointer moves over them.
+
+I do not want this behavior.
+
+## A. Remove Widget-Level Hover Effects
+
+Remove hover-triggered visual changes from every widget surface.
+
+When the mouse enters a widget:
+
+- Do not change the background color.
+- Do not change the background opacity.
+- Do not increase or decrease the widget scale.
+- Do not move the widget.
+- Do not alter its corner radius.
+- Do not increase the shadow.
+- Do not change border color.
+- Do not introduce additional overlays.
+- Do not reveal hidden toolbar elements.
+- Do not reveal widget navigation tabs.
+- Do not introduce unnecessary transitions.
+
+The appearance of a widget must remain visually identical whether the mouse is outside or inside its area.
+
+This applies globally to:
+
+- Clock.
+- Calendar.
+- Weather.
+- Pomodoro.
+- Photo Frame.
+- Agenda.
+- Quick Actions.
+- System Monitor.
+- Notes.
+- Todo List.
+
+## B. Remove Hover-Revealed UI Elements
+
+Some screenshots show small navigation tabs and additional labels appearing inside widget surfaces.
+
+Remove these hover-triggered elements.
+
+Do not expose debugging controls or widget management controls when the pointer enters a widget.
+
+Widget management should remain accessible through an explicit configuration interface, Plasma widget settings, or a dedicated settings panel.
+
+## C. Preserve Actual Interactions
+
+Do not disable functional buttons.
+
+Users must still be able to:
+
+- Click buttons.
+- Navigate calendar months.
+- Start and pause timers.
+- Open notes.
+- Edit tasks.
+- Navigate alarm slides.
+- Open settings.
+
+Keep keyboard focus indicators and accessible keyboard interaction.
+
+Pressed or selected states may remain where necessary, but must not cause the entire widget surface to change appearance.
+
+The default idle appearance must remain stable.
+
+---
+
+# 4. FINAL VISUAL POLISH — SUBTLE MACOS-LIKE DEPTH
+
+The interface is already reasonably close to the intended visual direction.
+
+Do not redesign the entire appearance unnecessarily.
+
+Instead, refine the visual details.
+
+Use the supplied macOS references, especially the fourth reference image, as guidance.
+
+The desired appearance combines:
+
+- Soft rounded surfaces.
+- Elegant typography.
+- Subtle depth.
+- Balanced spacing.
+- Carefully controlled shadows.
+- Beautiful background composition.
+
+## A. Subtle Shadow System
+
+The current widgets sometimes look too flat.
+
+Introduce restrained elevation to create a more tactile appearance.
+
+Use:
+
+- Soft ambient shadows.
+- Slightly layered surface depth.
+- Subtle separation from the wallpaper.
+- Refined translucent borders.
+- Natural-looking card elevation.
+
+The desired appearance resembles premium macOS desktop widgets.
+
+Avoid:
+
+- Heavy black shadows.
+- Excessive blur.
+- Neon glow.
+- Strong outlines.
+- Thick drop shadows.
+- Excessive 3D extrusion.
+
+Shadows must remain subtle.
+
+Use shared elevation tokens rather than individually hardcoding every shadow.
+
+Suggested initial elevation levels:
+
+- Level 0: no shadow.
+- Level 1: subtle ambient shadow.
+- Level 2: soft floating card shadow.
+- Level 3: reserved for selected modal surfaces only.
+
+Make elevation consistent across all widgets.
+
+## B. Preserve Existing Theme System
+
+Retain the current themes and customization features.
+
+Support:
+
+- Auto.
+- Light.
+- Dark.
+- Liquid Glass.
+- Aurora Gradient.
+- Pastel Editorial.
+- Warm Minimal.
+- Midnight.
+- Monochrome.
+- Custom colors.
+
+Do not make every widget dependent on Liquid Glass.
+
+## C. Typography
+
+Keep using the fonts already installed on the user's Linux system.
+
+Never download, bundle, or install new fonts automatically.
+
+Inspect installed families with:
+
+```bash
+fc-list --format='%{family}\n' | sort -u
+```
+
+Use the best available installed macOS-inspired font.
+
+Retain the current font selection if it is already working.
+
+Ensure the new widgets inherit the same typography system.
+
+---
+
+# 5. NEW MAJOR FEATURE — ADVANCED ALARM SYSTEM INSIDE CLOCK WIDGET
+
+This is one of the most important additions.
+
+Do not create a separate Alarm widget.
+
+Integrate the complete alarm manager directly into the existing Clock widget.
+
+The Clock widget must have a manually navigable multi-view interface.
+
+## A. Clock Widget Slides
+
+Create two primary views.
+
+### SLIDE 1 — Main Clock
+
+Display:
+
+- Current time.
+- Date.
+- Day of the week.
+- Optional location.
+- Elegant clock typography.
+
+If the user has at least one enabled alarm, display a small alarm or bell icon on the main clock view.
+
+The indicator must:
+
+- Be visible without hovering.
+- Be subtly positioned.
+- Not interfere with the clock layout.
+- Indicate that active alarms exist.
+- Optionally display the number of enabled alarms.
+
+Clicking the alarm indicator should navigate to the alarm management view.
+
+### SLIDE 2 — Alarm Manager
+
+Display:
+
+- List of configured alarms.
+- Time of each alarm.
+- Alarm label.
+- Repeat schedule.
+- Enabled/disabled status.
+- Ringtone indicator.
+- Snooze configuration.
+
+Provide an Add Alarm action.
+
+Allow users to create multiple independent alarms.
+
+## B. Manual Slide Navigation
+
+The user must be able to switch between the main clock and alarm manager manually.
+
+Support:
+
+- Previous/next navigation buttons.
+- Horizontal swipe gesture where supported.
+- Touchpad gesture where practical.
+
+CRITICAL:
+
+Do not implement automatic slideshow behavior.
+
+Do not switch views automatically after a fixed interval.
+
+Do not rotate between views in the background.
+
+The selected view must remain active until the user explicitly changes it.
+
+Use subtle transitions only when the user manually navigates between views.
+
+## C. Complete Alarm Configuration
+
+Each alarm must support:
+
+### Basic Information
+
+- Alarm label.
+- Alarm time.
+- Enable/disable.
+- One-time alarm.
+- Repeating alarm.
+
+### Repeat Schedule
+
+Allow selecting individual weekdays:
+
+- Monday.
+- Tuesday.
+- Wednesday.
+- Thursday.
+- Friday.
+- Saturday.
+- Sunday.
+
+Provide an option to repeat every day.
+
+Allow a one-time alarm with a specific date.
+
+Display repeat information clearly in the alarm list.
+
+### Ringtone Selection
+
+Allow users to select a ringtone.
+
+Provide:
+
+1. Built-in available system sounds.
+2. User-selected local audio files.
+3. Preview button.
+4. Volume configuration.
+5. Stop preview button.
+
+Use the existing Linux audio infrastructure where appropriate.
+
+Do not download ringtones automatically.
+
+Do not bundle unnecessary audio libraries or large sound collections.
+
+Inspect available audio playback capabilities before selecting an implementation.
+
+Use only audio formats supported by the selected playback backend.
+
+Show a useful error if an unsupported audio format is selected.
+
+### Snooze
+
+Allow users to configure snooze duration.
+
+Examples:
+
+- 5 minutes.
+- 10 minutes.
+- 15 minutes.
+- 20 minutes.
+- 30 minutes.
+- Custom duration.
+
+The snooze duration should be configurable independently for each alarm.
+
+Also provide a sensible default duration for newly created alarms.
+
+### Alarm Actions
+
+When an alarm triggers, provide:
+
+- Stop.
+- Snooze.
+- Display alarm label.
+- Display scheduled time.
+
+The alarm notification should remain available until acknowledged.
+
+Do not silently dismiss alarms.
+
+## D. Multiple Alarms
+
+Users must be able to create and store many alarms.
+
+Do not limit the system to a single active alarm.
+
+Alarms must be displayed in a vertically arranged list.
+
+For example:
+
+07:00 — Wake Up  
+08:00 — Morning Study  
+12:30 — Lunch Reminder  
+18:00 — Evening Activity  
+21:00 — Prepare for Tomorrow
+
+Allow:
+
+- Edit.
+- Delete.
+- Enable.
+- Disable.
+- Reorder where appropriate.
+
+If multiple alarms become due at the same time, do not overwrite or discard them.
+
+Preserve every due alarm and present them together in an active alarm queue or grouped notification.
+
+Avoid playing multiple ringtone streams simultaneously.
+
+Use a controlled playback and notification queue.
+
+## E. Alarm Persistence and Reliability
+
+The alarm system must work independently of whether the Clock widget is currently visible.
+
+The alarm configuration must persist across:
+
+- Widget reload.
+- Plasma restart.
+- Application restart.
+- User logout and subsequent login.
+
+Store alarm data in the existing local database.
+
+The Rust backend should be responsible for alarm scheduling.
+
+Do not implement alarm scheduling exclusively with a QML Timer.
+
+Use the existing shared Rust service.
+
+The scheduler should:
+
+- Calculate the next upcoming alarm.
+- Sleep until the next relevant event.
+- Recalculate when alarms change.
+- Recalculate when the system clock changes.
+- Handle timezone changes.
+- Re-evaluate due alarms after suspend/resume.
+- Avoid frequent background polling.
+- Avoid spawning unnecessary threads or processes.
+
+Use the existing session startup mechanism or a lightweight user-level service where appropriate.
+
+Do not create another unnecessary background daemon if the existing backend can perform this task.
+
+Document that alarms require an active user session and cannot ring while the computer is fully powered off.
+
+## F. Alarm Notifications
+
+Integrate with the existing Linux desktop notification capabilities.
+
+When an alarm triggers:
+
+- Show a clear alarm notification.
+- Include Stop and Snooze actions where supported.
+- Play the selected ringtone.
+- Update the alarm state.
+
+Ensure simultaneous alarms are not lost.
+
+Make the active alarm state recoverable after application reload where practical.
+
+---
+
+# 6. NEW WIDGET — NOTES
+
+Create a dedicated Notes widget inspired by macOS Notes.
+
+The design must integrate naturally with the existing URWidgets visual system.
+
+Do not make it look like a generic text editor.
+
+## A. Main Appearance
+
+The Notes widget should look like a compact personal note card.
+
+Characteristics:
+
+- Soft rounded surface.
+- Subtle shadow.
+- Clean typography.
+- Spacious text area.
+- Elegant title.
+- Minimal controls.
+- Consistent widget padding.
+
+Provide a visually pleasant default appearance.
+
+## B. Notes Functionality
+
+Users must be able to:
+
+- Create a new note.
+- Edit an existing note.
+- Delete a note.
+- Rename a note.
+- Pin important notes.
+- Open and switch between saved notes.
+- Search notes.
+- Save notes automatically.
+
+Support multiple notes.
+
+Keep the main widget compact.
+
+When editing longer notes, provide an appropriate expanded editing view.
+
+## C. Autosave
+
+Implement reliable local autosave.
+
+Use a small debounce interval when writing changes to the database.
+
+Do not write to SQLite for every individual keystroke.
+
+Avoid losing text when:
+
+- The widget is closed.
+- Plasma restarts.
+- The computer shuts down normally.
+- The user switches between notes.
+
+## D. Optional Organization
+
+Support lightweight organizational features:
+
+- Note title.
+- Note body.
+- Pin.
+- Creation date.
+- Modified date.
+- Optional tags.
+
+Do not introduce an unnecessarily complicated note management system.
+
+Prioritize speed and ease of use.
+
+## E. Database
+
+Use the existing SQLite database.
+
+Add a notes table using a versioned database migration.
+
+Preserve existing application data.
+
+Never drop or overwrite an existing database during an upgrade.
+
+---
+
+# 7. NEW WIDGET — TODO LIST
+
+Create a separate Todo List widget.
+
+It must visually complement Notes.
+
+The two widgets should share the same visual language but serve different purposes.
+
+## A. Appearance
+
+Create a compact macOS-inspired checklist surface.
+
+Include:
+
+- Elegant heading.
+- Minimal list items.
+- Circular completion controls.
+- Subtle separators.
+- Small progress indication.
+- Clean typography.
+
+Avoid generic HTML checkbox styling.
+
+## B. Features
+
+Users must be able to:
+
+- Create a task.
+- Rename a task.
+- Edit task details.
+- Mark a task as completed.
+- Unmark a task.
+- Delete a task.
+- Reorder tasks.
+- View completed tasks.
+- Hide completed tasks.
+- Clear completed tasks.
+
+Optional task metadata:
+
+- Due date.
+- Priority.
+- Category.
+
+Keep these options lightweight and unobtrusive.
+
+## C. Progress
+
+Display a compact completion summary.
+
+Example:
+
+Today's Tasks
+
+3 of 5 completed
+
+Progress should update immediately when a task is checked.
+
+## D. Persistence
+
+Store all Todo data in the existing SQLite database.
+
+Tasks must persist across application and desktop restarts.
+
+Avoid continuous unnecessary database writes.
+
+Do not make the Todo List dependent on an external cloud service.
+
+---
+
+# 8. GLOBAL FEATURE — CUSTOM IMAGE BACKGROUND FOR EVERY WIDGET
+
+This is another major feature.
+
+All widgets must support individual background customization using local image files.
+
+This must be implemented as a reusable global widget background system.
+
+It must not be separately implemented with inconsistent logic in every widget.
+
+## A. Supported Formats
+
+Support:
+
+- SVG.
+- JPG.
+- JPEG.
+- PNG.
+- WebP.
+
+The system must verify actual format decoding support in the target Qt 5 installation.
+
+If an optional image plugin or Qt module is required, inspect availability before adding dependencies.
+
+Do not claim support for a format unless the application can successfully display it.
+
+Do not silently display broken images.
+
+Show a useful error when a file cannot be decoded.
+
+## B. Widget Background Configuration
+
+Every widget must support an individual background image:
+
+- Clock.
+- Clock Alarm View.
+- Calendar.
+- Weather.
+- Pomodoro.
+- Agenda.
+- Photo Frame.
+- Quick Actions.
+- System Monitor.
+- Notes.
+- Todo List.
+- Any future widgets.
+
+Users must be able to select a different image for each widget.
+
+Widget backgrounds must not automatically change other widgets.
+
+## C. Background Controls
+
+Provide:
+
+- Select image.
+- Change image.
+- Remove image.
+- Reset to default.
+- Preview image.
+- Image fit mode.
+- Image position.
+- Surface overlay opacity.
+- Optional color tint.
+
+Image fit modes:
+
+1. Cover.
+2. Contain.
+3. Stretch.
+4. Center.
+
+Default should be Cover for photographic widget backgrounds.
+
+## D. Readability Controls
+
+When an image is used as a background, preserve readable text.
+
+Provide:
+
+- Adjustable dark overlay.
+- Adjustable light overlay.
+- Overlay opacity.
+- Automatic contrast option where practical.
+- Manual text color override.
+
+The user should be able to choose whether the content uses light or dark typography.
+
+Do not allow text to disappear against bright or dark images.
+
+## E. Background Architecture
+
+Create one reusable background component or abstraction.
+
+Suggested component:
+
+WidgetBackground.qml
+
+It should handle:
+
+- Image loading.
+- Format validation.
+- Image cropping.
+- Image positioning.
+- Opacity.
+- Surface tint.
+- Rounded clipping.
+- Fallback behavior.
+
+All widgets should consume this shared component.
+
+Do not duplicate image-processing code in every widget.
+
+## F. Performance Requirements
+
+Custom backgrounds must not make URWidgets significantly heavier.
+
+Implement:
+
+- Lazy image loading.
+- Source-size-aware decoding.
+- Thumbnail caching where appropriate.
+- Image resource reuse.
+- Proper resource release.
+- No repeated decoding when the widget is merely redrawn.
+
+Do not load original full-resolution images unnecessarily when the widget is small.
+
+Do not constantly process SVG images.
+
+Cache rendered assets where appropriate.
+
+Avoid expensive blur filters on large photographs.
+
+The image should be loaded once and reused while its configuration remains unchanged.
+
+## G. Local File Handling
+
+Use an appropriate native file picker.
+
+Persist selected local image paths in the existing configuration system.
+
+Handle missing or moved files gracefully.
+
+If the original file is unavailable, show the default widget surface and provide an option to select another image.
+
+Do not automatically copy large image files into the application's database.
+
+---
+
+# 9. UNIFIED SETTINGS EXPERIENCE
+
+Integrate the new functionality into the existing URWidgets configuration system.
+
+Do not create separate settings applications for each feature.
+
+## Appearance Settings
+
+Retain:
+
+- Auto.
+- Light.
+- Dark.
+- Theme presets.
+- Accent colors.
+- Gradient configuration.
+- Typography settings.
+- Surface opacity.
+- Corner radius.
+- Shadow intensity.
+
+## Widget Appearance
+
+Allow:
+
+- Individual widget background image.
+- Background image fit.
+- Background opacity.
+- Tint.
+- Text contrast.
+- Shadow level.
+- Reset widget appearance.
+
+## Clock & Alarm Settings
+
+Allow configuration of:
+
+- Clock format.
+- Date format.
+- Clock location label.
+- Default snooze duration.
+- Default ringtone.
+- Default alarm volume.
+
+Individual alarms must still retain their own settings.
+
+## Data Management
+
+Provide appropriate ways to:
+
+- Reset widget configuration.
+- Preserve notes and alarms.
+- Export configuration if supported.
+- Avoid destructive settings resets.
+
+---
+
+# 10. TECHNICAL ARCHITECTURE AND RESOURCE EFFICIENCY
+
+Performance must remain a top priority.
+
+URWidgets should not become significantly heavier just because a few modules are added.
+
+## A. Shared Rust Backend
+
+Reuse the current Rust backend.
+
+Extend its existing modules for:
+
+- Alarm scheduling.
+- Notes persistence.
+- Todo persistence.
+- Background configuration management.
+- Existing widget data.
+
+Do not create separate long-running backend processes for individual features.
+
+## B. Tauri
+
+If Tauri is already used for the settings application, keep it.
+
+Do not launch additional Tauri WebViews for every desktop widget.
+
+Avoid using Tauri for tasks already handled efficiently by the current native desktop widget interface.
+
+Do not increase process count unnecessarily.
+
+## C. IPC
+
+Reuse the existing IPC implementation.
+
+Do not introduce additional communication mechanisms unless technically necessary.
+
+Communication should remain asynchronous where appropriate.
+
+Avoid blocking widget rendering while waiting for backend operations.
+
+## D. Database
+
+Use the current SQLite database.
+
+Implement safe database migrations.
+
+Suggested additional tables:
+
+- alarms
+- notes
+- todo_items
+- widget_backgrounds
+
+Adapt these to the existing schema if equivalent structures already exist.
+
+Do not duplicate data structures.
+
+Use reasonable indexes and transactions.
+
+## E. Scheduling
+
+Do not create one permanent polling loop per feature.
+
+Prefer a shared scheduling mechanism.
+
+The alarm scheduler should sleep until its next event.
+
+Notes and Todo should update only when the user modifies data.
+
+Image backgrounds should not be reprocessed on every frame.
+
+## F. Rendering
+
+Keep the widget UI lightweight.
+
+Avoid:
+
+- Excessive QML nesting.
+- Expensive ShaderEffects.
+- Continuously animated gradients.
+- Unnecessary blur.
+- Frequent image decoding.
+- Unnecessary full-widget repainting.
+- Repeated IPC polling.
+- Duplicate timers.
+
+Use simple, reusable components.
+
+## G. Dependency Management
+
+Before introducing any new dependency:
+
+1. Check whether the project already has a suitable library.
+2. Check whether the dependency is compatible with the existing versions.
+3. Explain why it is necessary.
+4. Prefer small, maintained dependencies.
+5. Avoid pulling in large frameworks for small features.
+
+---
+
+# 11. VISUAL CONSISTENCY
+
+All new widgets must look like they belong to the same application.
+
+The Notes and Todo widgets must not look like third-party Linux applications.
+
+Alarm views must look like a natural extension of the Clock widget.
+
+Custom image backgrounds must inherit the same surface clipping, typography, and shadow system.
+
+The overall aesthetic must remain:
+
+- macOS-inspired.
+- Soft.
+- Refined.
+- Consistent.
+- Personal.
+- Premium.
+
+Do not introduce unnecessary decorative elements.
+
+Do not make everything colorful.
+
+Use the current accent color selectively.
+
+Preserve good typography and whitespace.
+
+---
+
+# 12. TESTING AND QUALITY ASSURANCE
+
+Test the complete application after changes.
+
+## A. Visual Tests
+
+Verify:
+
+- No hover-induced widget transformations.
+- No unexpected toolbar overlays.
+- No navigation tabs appearing on pointer hover.
+- No clipping.
+- No text overflow.
+- Consistent corner radius.
+- Consistent shadow.
+- Correct image cropping.
+- Correct Light and Dark appearances.
+- Proper layout at different widget sizes.
+
+## B. Alarm Tests
+
+Verify:
+
+- Create multiple alarms.
+- Edit an alarm.
+- Delete an alarm.
+- Disable an alarm.
+- Re-enable an alarm.
+- One-time alarm.
+- Daily repetition.
+- Selected weekday repetition.
+- Ringtone selection.
+- Ringtone preview.
+- Snooze duration.
+- Stop action.
+- Simultaneous due alarms.
+- Persistent configuration after restart.
+- Clock view indicator.
+- Manual slide navigation.
+- No automatic slideshow.
+- Alarm scheduling after system resume.
+
+## C. Notes Tests
+
+Verify:
+
+- Create.
+- Edit.
+- Rename.
+- Delete.
+- Autosave.
+- Switch between notes.
+- Search.
+- Pin.
+- Restart persistence.
+
+## D. Todo Tests
+
+Verify:
+
+- Add task.
+- Edit task.
+- Delete task.
+- Complete task.
+- Reopen completed task.
+- Reorder.
+- Progress summary.
+- Restart persistence.
+
+## E. Image Background Tests
+
+Test actual SVG, JPG, PNG, and WebP files.
+
+Verify:
+
+- Image loading.
+- Image replacement.
+- Image removal.
+- Cover.
+- Contain.
+- Stretch.
+- Center.
+- Overlay.
+- Text readability.
+- Missing file fallback.
+- Image caching.
+
+Test every widget type, not just one.
+
+## F. Performance Tests
+
+Measure before and after the changes.
+
+Compare:
+
+- Total process count.
+- Rust backend RAM.
+- UI process RAM.
+- Idle CPU.
+- Active CPU.
+- Image-heavy widget behavior.
+- Alarm scheduler idle behavior.
+- Startup time.
+
+Use actual benchmark results.
+
+Do not invent RAM or CPU improvements.
+
+The application should remain responsive even when all widgets are enabled.
+
+---
+
+# 13. SAFE DEVELOPMENT AND RELEASE RULES
+
+Do not overwrite the working application blindly.
+
+Before editing:
+
+- Inspect current source.
+- Preserve working files.
+- Create a backup or use version control.
+- Understand current database migrations.
+- Identify all affected components.
+
+Do not delete user data.
+
+Do not reset existing widget configurations.
+
+Do not remove existing themes.
+
+Do not break the working Clock widget.
+
+Do not create unnecessary new dependencies.
+
+Keep the project compatible with KDE Plasma 5.
+
+After implementation:
+
+- Build the project.
+- Validate the UI.
+- Test new functionality.
+- Test existing functionality.
+- Fix compilation errors.
+- Fix runtime errors.
+- Verify database migration.
+- Generate updated installation packages if supported.
+
+If the build environment cannot generate a Debian package, provide the exact local build and packaging commands.
+
+Never claim that a build or test succeeded unless it actually did.
+
+---
+
+# 14. FINAL DELIVERABLES
+
+The final release should include:
+
+1. Fully polished existing URWidgets interface.
+2. Removal of unwanted widget hover effects.
+3. Clock widget with complete Alarm Manager.
+4. Multiple persistent alarms.
+5. Repeat schedules.
+6. Ringtone selection and preview.
+7. Configurable snooze.
+8. Notes widget.
+9. Todo List widget.
+10. Custom image background support for every widget.
+11. SVG, JPG, PNG, and WebP support verified in the target environment.
+12. Unified appearance settings.
+13. Subtle premium macOS-inspired shadows.
+14. Preserved existing functionality.
+15. Optimized shared Rust backend.
+16. Updated source code.
+17. Updated documentation.
+18. Updated installation package.
+
+---
+
+# 15. FINAL EXECUTION INSTRUCTIONS
+
+Do not stop after producing an implementation plan.
+
+Proceed with actual source-code modifications.
+
+Work incrementally and validate each subsystem.
+
+Prioritize in this order:
+
+1. Remove hover effects and finish the visual polish.
+2. Improve the shared image background architecture.
+3. Implement Clock Alarm Manager.
+4. Implement Notes.
+5. Implement Todo List.
+6. Integrate configuration settings.
+7. Run performance regression tests.
+8. Build the final release.
+
+After each major stage, summarize:
+
+- Files modified.
+- Features completed.
+- Dependencies added, if any.
+- Tests performed.
+- Remaining issues.
+
+Keep the current working implementation intact.
+
+Do not use mock functionality as a substitute for actual implementation.
+
+Do not unnecessarily expand the scope beyond the features described here.
+
+**FINAL PRODUCT GOAL:**
+
+URWidgets should feel like a refined, customizable macOS-inspired WidgetWall running natively on Linux.
+
+It should be more beautiful, more functional, and more personal without becoming significantly heavier.
+
+**URWidgets — Your Desktop, Your Atmosphere.**

@@ -1,0 +1,18 @@
+[Desktop Entry]
+Name=URWidgets — Notes
+Comment=macOS Notes-inspired quick capture widget with pin and debounced SQLite autosave
+Icon=knotes
+Type=Service
+X-KDE-ServiceTypes=Plasma/Applet
+
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+
+X-KDE-PluginInfo-Author=Haris Gitama
+X-KDE-PluginInfo-Email=https://github.com/Harisgitama
+X-KDE-PluginInfo-Name=org.urwidgets.notes
+X-KDE-PluginInfo-Version=3.1.0
+X-KDE-PluginInfo-Website=https://rissaxie.com
+X-KDE-PluginInfo-Category=System Information
+X-KDE-PluginInfo-License=MIT
+X-KDE-PluginInfo-EnabledByDefault=true

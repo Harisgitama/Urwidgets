@@ -1,0 +1,6 @@
+{
+  "name": "URWidgets — KDE Plasma 5 & Rust Desktop Widget Ecosystem",
+  "description": "Modular, resource-efficient Linux desktop widget ecosystem for Linux Mint and KDE Plasma 5 powered by a shared Rust D-Bus/SQLite daemon, QML Plasmoids, and Tauri 2 Control Center.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

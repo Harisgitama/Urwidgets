@@ -1,0 +1,1124 @@
+# URWidgets v3.0.1
+## CRITICAL REMEDIATION, FEATURE COMPLETION & UI FINALIZATION
+
+**Project:** URWidgets  
+**Release:** 3.0.1  
+**Author:** Haris Gitama  
+**GitHub:** https://github.com/Harisgitama  
+**Platform:** Linux Mint + KDE Plasma 5  
+**Core Architecture:** Existing Rust backend  
+**Widget Interface:** Existing KDE Plasma / QML implementation  
+**Database:** Existing SQLite implementation
+
+---
+
+# 1. MOST IMPORTANT: THIS IS A REMEDIATION RELEASE
+
+The previous v3.0.0 development specification was NOT fully implemented.
+
+Do not assume that the changelog describes the actual state of the application.
+
+The previous implementation only introduced a basic Music Player widget, without functional configuration for selecting a local music folder or entering a streaming URL.
+
+Additionally, several previously functioning or requested features are missing or incomplete.
+
+The objective of v3.0.1 is to CORRECT THESE FAILURES and implement the previously promised features properly.
+
+This is not a request to create another visual prototype.
+
+This is not a request to generate mockup components.
+
+This is not a request to write another implementation plan and stop.
+
+**You must inspect the actual source code, modify the existing implementation, compile it, and verify the functionality.**
+
+Do not claim a feature is complete merely because:
+- Its widget is visible.
+- Its settings screen exists.
+- Its button is clickable.
+- Its configuration value can be changed.
+- Its component compiles.
+
+A feature is complete only when its actual intended behavior works.
+
+## ABSOLUTE PRIORITIES
+
+1. Restore the missing Alarm functionality.
+2. Implement independent preferences for every widget.
+3. Fix Appearance, Theme, and Accent propagation for Clock and Calendar.
+4. Implement actual 3D card elevation.
+5. Implement Photo Frame crop and image positioning.
+6. Complete actual Music Player source configuration and playback.
+7. Remove Todo List completely.
+8. Update the actual changelog and release documentation.
+
+Do not skip any of these requirements.
+
+---
+
+# 2. FIRST TASK: AUDIT THE EXISTING PROJECT
+
+Inspect the entire existing codebase before editing.
+
+Do not assume that previous changelog entries correspond to implemented functionality.
+
+Inspect:
+
+- All Rust source files.
+- All QML components.
+- Plasma widget metadata.
+- Existing widget registration.
+- Widget configuration files.
+- Appearance settings.
+- Theme engine.
+- Accent color implementation.
+- Icon and widget style implementation.
+- Clock and Alarm components.
+- Calendar components.
+- Photo Frame components.
+- Music Player components.
+- SQLite schema and migrations.
+- Existing IPC and D-Bus interfaces.
+- Packaging scripts.
+- Existing changelog.
+
+Create a feature audit table:
+
+| Feature | Expected | Actual State | Required Action |
+|---|---|---|---|
+| Clock | Clock + alarm indicator | Inspect | Fix/restore |
+| Alarm | Full alarm management | Inspect | Restore/complete |
+| Calendar | Independent appearance | Inspect | Fix |
+| Pomodoro | Immediate theme updates | Inspect | Fix |
+| Photo Frame | Crop editor | Inspect | Implement |
+| Music Player | Local folder + stream URL | Inspect | Complete |
+| Todo List | Removed | Inspect | Remove |
+| Per-widget preferences | Independent configuration | Inspect | Implement |
+| 3D shadows | Visible card elevation | Inspect | Implement |
+
+Clearly identify any feature that is absent, broken, incomplete, or only represented by placeholder UI.
+
+After the audit, proceed with the actual modifications.
+
+Do not stop after presenting the audit.
+
+---
+
+# 3. REMOVE TODO LIST COMPLETELY
+
+The current Todo List implementation does not meet the intended functionality.
+
+The deadline management feature is missing.
+
+For this release, remove the Todo List widget entirely rather than shipping an incomplete implementation.
+
+Remove its active integration from:
+
+- Desktop widget registration.
+- Widget selection.
+- Widget management.
+- Appearance configuration.
+- Individual widget preferences.
+- Widget navigation tabs.
+- Settings shortcuts.
+- Widget count and active-widget lists.
+- Related UI references.
+
+Do not leave an empty Todo widget.
+
+Do not leave inaccessible configuration pages.
+
+Do not leave visible placeholder buttons.
+
+IMPORTANT DATABASE SAFETY:
+
+Do not destructively delete unrelated user data.
+
+If existing Todo records are present, preserve them in the database or in a safe archival state before removing the widget interface.
+
+Do not drop tables or reset the entire database unnecessarily.
+
+The final application must not present Todo List as an available active widget.
+
+Update all documentation to reflect its removal.
+
+---
+
+# 4. RESTORE THE COMPLETE ALARM SYSTEM
+
+The previous alarm functionality disappeared in the latest implementation.
+
+This is a regression and must be fixed.
+
+Restore the Alarm Manager as part of the existing Clock widget.
+
+Do not create a second redundant Clock widget unless the existing architecture explicitly requires a separate Alarm widget.
+
+## A. Main Clock View
+
+Display:
+
+- Current time.
+- Date.
+- Day of week.
+- Optional location.
+- Subtle alarm indicator when enabled alarms exist.
+
+The alarm indicator must:
+- Remain visible without hover.
+- Show that alarms are configured.
+- Optionally indicate the number of active alarms.
+- Open the Alarm Manager when clicked.
+
+## B. Manual Clock Navigation
+
+Support two manually controlled views:
+
+1. Main Clock.
+2. Alarm Manager.
+
+Use:
+- Previous and next buttons.
+- Horizontal swipe where supported.
+
+There must be NO automatic slideshow.
+
+The currently selected view must remain active until manually changed.
+
+Remove any unwanted hover-triggered navigation controls.
+
+## C. Alarm Creation
+
+Users must be able to create multiple alarms.
+
+Provide a proper time picker with:
+- Hour selection.
+- Minute selection.
+- Clear current selection.
+- Confirm action.
+- Cancel action.
+
+Do not use a plain text field as the primary time selector.
+
+## D. Alarm Settings
+
+Each alarm must independently support:
+
+- Alarm label.
+- Time.
+- One-time or repeating schedule.
+- Individual weekday selection.
+- Every-day repeat.
+- Specific date for one-time alarms.
+- Enable/disable.
+- Individual ringtone.
+- Ringtone preview.
+- Volume.
+- Individual snooze duration.
+
+Available snooze presets:
+
+- 5 minutes.
+- 10 minutes.
+- 15 minutes.
+- 20 minutes.
+- 30 minutes.
+- Custom duration.
+
+## E. Multiple Alarms
+
+Allow unlimited practical user-created alarms.
+
+Provide:
+- Add.
+- Edit.
+- Delete.
+- Enable.
+- Disable.
+
+If multiple alarms become due simultaneously, do not discard or overwrite any of them.
+
+Handle them through a controlled notification and playback queue.
+
+## F. Ringtone
+
+Allow selection from:
+- Available system sounds.
+- User-selected local audio files.
+
+Provide:
+- Preview.
+- Stop preview.
+- Volume.
+- Per-alarm ringtone selection.
+
+Do not bundle large sound collections.
+
+Do not download sounds automatically.
+
+## G. Alarm Scheduler
+
+The Rust backend must be responsible for reliable alarm scheduling.
+
+Use the existing shared backend.
+
+Do not create a new daemon for alarms.
+
+The scheduler must:
+- Persist alarms.
+- Calculate the next alarm.
+- Sleep until relevant events.
+- Recalculate after changes.
+- Handle timezone and clock changes.
+- Recheck after system suspend/resume.
+- Avoid excessive polling.
+
+Alarms must work when the Clock widget is not currently visible, provided the existing background service is running and the user session is active.
+
+Do not claim alarms can ring while the computer is completely powered off.
+
+## H. Regression Prevention
+
+Restoring alarms must not break the existing Clock appearance.
+
+Keep the main Clock view and Alarm Manager connected through a stable, manually controlled navigation system.
+
+---
+
+# 5. CRITICAL: SEPARATE PREFERENCES FOR EVERY WIDGET
+
+This is a fundamental architecture change.
+
+Previously, some configuration changes affected widgets inconsistently.
+
+For v3.0.1, each widget must have its own independent preference configuration.
+
+Do not make every widget share one mutable configuration object.
+
+Each widget must own its own preference state.
+
+## A. Independent Preference Pages
+
+Implement individual configuration pages for:
+
+1. Clock & Alarm.
+2. Calendar.
+3. Pomodoro.
+4. Weather.
+5. Agenda.
+6. Photo Frame.
+7. Quick Actions.
+8. System Monitor.
+9. Notes.
+10. Music Player.
+
+Todo List must not appear.
+
+Each page must have its own configuration identifier and persistent settings.
+
+Suggested internal identifiers:
+
+```text
+widget.clock
+widget.calendar
+widget.pomodoro
+widget.weather
+widget.agenda
+widget.photo_frame
+widget.quick_actions
+widget.system_monitor
+widget.notes
+widget.music_player
+```
+
+Adapt these names to the existing codebase when appropriate.
+
+## B. Per-Widget Appearance Preferences
+
+Every widget must independently support:
+
+### Appearance
+- Auto.
+- Light.
+- Dark.
+
+### Theme
+- Default.
+- Dark.
+- Clear.
+- Tinted.
+
+### Accent Color
+- Automatic.
+- Pink.
+- Red.
+- Orange.
+- Yellow.
+- Green.
+- Blue.
+- Purple.
+- Graphite.
+
+### Visual Settings
+- Surface opacity.
+- Background color.
+- Gradient.
+- Corner radius.
+- Shadow intensity.
+- Border opacity.
+- Text color.
+- Icon style.
+- Typography where appropriate.
+
+### Background Image
+- Select image.
+- Remove image.
+- Image fit.
+- Image position.
+- Overlay.
+- Text readability.
+
+## C. Global Defaults and Local Overrides
+
+A global appearance configuration may still exist as a starting default.
+
+However, changing the appearance of one widget must NOT unexpectedly overwrite another widget's custom settings.
+
+Use:
+
+- Global defaults.
+- Per-widget overrides.
+
+For example:
+
+Clock:
+- Light.
+- Pink accent.
+- Default style.
+
+Calendar:
+- Dark.
+- Blue accent.
+- Clear style.
+
+Pomodoro:
+- Light.
+- Green accent.
+- Tinted style.
+
+All these combinations must be possible simultaneously.
+
+A user should be able to customize each widget without affecting the others.
+
+## D. Immediate Updates
+
+Preference changes must apply immediately.
+
+No need to:
+- Resize the widget.
+- Move the widget.
+- Restart Plasma.
+- Reload the widget.
+- Restart the daemon.
+
+When a preference changes, update only the corresponding widget instance or all widget instances explicitly configured to use the same setting.
+
+Use proper QML property notifications or existing IPC signals.
+
+Do not use resize events to force repainting.
+
+## E. Persistence
+
+Preferences must survive:
+- Widget reload.
+- Plasma restart.
+- Daemon restart.
+- User logout.
+- Application restart.
+
+Implement safe SQLite configuration storage or reuse the existing configuration mechanism.
+
+Do not duplicate existing settings tables unnecessarily.
+
+---
+
+# 6. FIX CLOCK AND CALENDAR APPEARANCE
+
+The Clock and Calendar currently do not respond correctly to Appearance, Theme, and Accent settings.
+
+This must be specifically addressed.
+
+Test these two widgets independently.
+
+## Clock
+
+Verify:
+- Light mode.
+- Dark mode.
+- Auto mode.
+- Pink accent.
+- Blue accent.
+- Green accent.
+- Default style.
+- Dark style.
+- Clear style.
+- Tinted style.
+- Background image.
+- Opacity.
+- Shadow.
+
+## Calendar
+
+Perform the same tests.
+
+The current date selection, navigation, and calendar text must remain readable across all styles.
+
+Do not simply recolor the outer card.
+
+Make sure internal elements also respond:
+- Selected date.
+- Date text.
+- Weekday labels.
+- Navigation icons.
+- Event indicators.
+- Selection states.
+
+Calendar and Clock must have fully independent appearance preferences.
+
+---
+
+# 7. IMPLEMENT REAL 3D CARD ELEVATION
+
+The previous implementation promised subtle 3D-style shadows, but the actual widgets still look flat.
+
+This requirement was NOT completed.
+
+Implement visible, consistent card elevation.
+
+Use the supplied visual references as guidance.
+
+## A. Intended Appearance
+
+Every widget should feel like a slightly floating card above the wallpaper.
+
+Use:
+
+- Soft ambient shadow.
+- Subtle directional shadow.
+- Slight visual separation from the background.
+- Thin translucent border.
+- Rounded corners.
+- Consistent elevation.
+
+## B. Shadow Levels
+
+Create a shared elevation system:
+
+Level 0:
+No shadow.
+
+Level 1:
+Subtle card shadow.
+
+Level 2:
+Clearly visible but soft macOS-inspired floating shadow.
+
+Level 3:
+Reserved for dialogs or special elevated surfaces.
+
+The default widget appearance should use Level 2 or a visually equivalent subtle floating-card appearance.
+
+## C. Qt 5 Compatibility
+
+Inspect which Qt 5 graphical effects are available.
+
+Use supported and efficient techniques.
+
+If QtGraphicalEffects is available, consider an appropriately configured DropShadow.
+
+If it is unavailable, use a compatible alternative based on layered rounded surfaces.
+
+Do not introduce unsupported Qt 6 APIs.
+
+Do not use expensive continuous blur or shader rendering.
+
+Cache effects where possible.
+
+Use appropriate shadow radius, offset, and opacity.
+
+## D. All Widgets
+
+Apply the shared elevation system consistently to:
+
+- Clock.
+- Calendar.
+- Pomodoro.
+- Weather.
+- Agenda.
+- Photo Frame.
+- Quick Actions.
+- System Monitor.
+- Notes.
+- Music Player.
+
+The elevation may be adjusted for different card sizes, but the visual language must remain unified.
+
+## E. Validation
+
+Do not claim 3D effects are implemented merely because shadow settings exist.
+
+Generate an actual desktop screenshot.
+
+Inspect whether cards visibly separate from the wallpaper.
+
+Compare the result against the supplied macOS reference.
+
+---
+
+# 8. PHOTO FRAME — ACTUAL CROP AND FIXED IMAGE POSITIONING
+
+The previous Photo Frame implementation is missing the crop/fix image functionality.
+
+This feature must now be implemented fully.
+
+## A. Display Modes
+
+Support:
+
+1. Single Photo.
+2. Slideshow.
+
+Single Photo:
+- Display one selected image.
+- No automatic image rotation.
+- Allow manual image selection.
+
+Slideshow:
+- Rotate through selected images.
+- Enable/disable slideshow.
+- Configure image interval.
+
+## B. Interval
+
+Presets:
+- 5 seconds.
+- 10 seconds.
+- 15 seconds.
+- 30 seconds.
+- 60 seconds.
+- Custom.
+
+Persist the interval.
+
+Do not run a slideshow timer while the mode is disabled.
+
+## C. Interactive Crop Editor
+
+Implement a real crop editor.
+
+The editor must provide:
+
+- Actual live image preview.
+- Image dragging.
+- Horizontal positioning.
+- Vertical positioning.
+- Zoom.
+- Reset.
+- Confirm.
+- Cancel.
+
+The preview must use the actual widget aspect ratio.
+
+When the widget displays an image in Cover mode, the crop editor must accurately show which area will remain visible.
+
+Users must be able to select the exact part of the image they want to display.
+
+## D. Fixed Crop Configuration
+
+Save crop configuration individually for each image.
+
+Store:
+- Image path or stable identifier.
+- Scale.
+- Horizontal position.
+- Vertical position.
+- Fit mode.
+- Widget aspect ratio where necessary.
+
+Do not destructively alter the original image file.
+
+Changing widget size should not silently discard the user's crop configuration.
+
+Provide a reset option.
+
+## E. Preview Accuracy
+
+The preview must match the final desktop widget as closely as possible.
+
+Do not create a fake crop preview that merely displays the complete image.
+
+Do not omit the actual drag and positioning interaction.
+
+## F. Supported Formats
+
+Verify real support for:
+- SVG.
+- JPG.
+- JPEG.
+- PNG.
+- WebP.
+
+Retain the existing custom background functionality.
+
+Use lazy loading and image caching to maintain performance.
+
+---
+
+# 9. MUSIC PLAYER — FINISH THE ACTUAL FUNCTIONALITY
+
+The current Music Player widget exists visually, but the source configuration functionality is incomplete.
+
+It is not acceptable for v3.0.1.
+
+The user must be able to select where music comes from.
+
+Implement two complete source modes.
+
+## A. Source Selection Interface
+
+Add a clearly accessible configuration section called:
+
+Music Source
+
+Provide two choices:
+
+1. Local Music.
+2. Online Stream.
+
+These choices must actually work.
+
+## B. Local Music Mode
+
+Users must be able to:
+
+1. Open a native folder picker.
+2. Select a local music directory.
+3. Scan supported audio files.
+4. Display discovered tracks.
+5. Select a track.
+6. Start playback.
+7. Pause.
+8. Resume.
+9. Stop.
+10. Navigate next/previous.
+11. Seek within a track.
+12. Adjust volume.
+
+Display:
+- Track title.
+- Artist.
+- Album.
+- Duration.
+- Album artwork where available.
+
+The user must be able to change the selected music folder.
+
+Provide a manual rescan action.
+
+Avoid repeatedly rescanning the folder.
+
+Cache metadata where appropriate.
+
+Do not scan the entire home directory automatically.
+
+## C. Online Stream Mode
+
+Create a real URL input.
+
+Users must be able to:
+
+1. Enter a direct playable audio or stream URL.
+2. Validate the URL.
+3. Connect to the stream.
+4. Start playback.
+5. Pause if supported.
+6. Stop.
+7. Save favorite URLs.
+8. Select saved URLs.
+9. Remove saved URLs.
+
+Support direct audio files and compatible internet radio streams where the chosen playback backend permits.
+
+IMPORTANT:
+
+A normal website URL is not automatically a direct audio URL.
+
+Do not claim that YouTube, Spotify, or other protected streaming page URLs are playable unless an explicitly supported integration exists.
+
+Do not bypass DRM or access controls.
+
+Do not scrape protected streaming services.
+
+Provide clear error feedback when a URL is unsupported.
+
+## D. Audio Playback Must Be Real
+
+Do not implement fake play buttons.
+
+Do not simulate moving progress bars without real playback.
+
+Use an actual compatible playback backend.
+
+Before adding dependencies, inspect the existing environment.
+
+Prefer reusing existing Linux multimedia infrastructure.
+
+Evaluate:
+- Existing project audio library.
+- GStreamer availability.
+- Qt Multimedia availability.
+- Existing MPRIS capabilities.
+
+Choose one suitable solution rather than several overlapping engines.
+
+## E. Playback State
+
+The widget must receive actual playback state updates.
+
+Display:
+- Playing.
+- Paused.
+- Stopped.
+- Buffering.
+- Error.
+
+Update track metadata immediately after track changes.
+
+Do not require widget resize or restart.
+
+## F. Playback Queue
+
+Provide:
+- Add track to queue.
+- Remove track.
+- Clear queue.
+- Select track.
+- Next.
+- Previous.
+
+Keep queue functionality simple and reliable.
+
+## G. Music Player Appearance
+
+Use the same URWidgets visual design system.
+
+Suggested layout:
+
+- Artwork on the left.
+- Title and artist on the right.
+- Previous, play/pause, next controls.
+- Progress bar.
+- Current time and duration.
+
+Apply the real shared shadow effect.
+
+Respect the Music Player's independent Appearance preferences.
+
+---
+
+# 10. OTHER EXISTING WIDGETS MUST REMAIN WORKING
+
+Do not break:
+
+- Pomodoro.
+- Weather.
+- Agenda.
+- Quick Actions.
+- System Monitor.
+- Notes.
+
+Remove only Todo List.
+
+Ensure all remaining widgets:
+- Retain functionality.
+- Have independent preferences.
+- Support the current theme system.
+- Support the appropriate custom backgrounds.
+- Display consistent card elevation.
+- Persist settings.
+
+Do not silently remove any existing functionality to simplify the project.
+
+---
+
+# 11. DATABASE AND MIGRATION SAFETY
+
+Before schema changes, inspect the current SQLite structure.
+
+Do not reset the database.
+
+Do not drop unrelated tables.
+
+Implement versioned migrations.
+
+Store configuration in a way that guarantees independent preferences.
+
+A suggested conceptual structure:
+
+```text
+widget_preferences
+- widget_id
+- appearance
+- theme_style
+- accent_color
+- icon_style
+- background_color
+- background_image
+- opacity
+- shadow_level
+- custom_settings
+- updated_at
+```
+
+Adapt this to the existing schema.
+
+Do not create duplicate configuration storage if equivalent functionality already exists.
+
+Migrate existing settings safely.
+
+Preserve:
+- Alarms.
+- Notes.
+- Music sources.
+- Saved stream URLs.
+- Photo selections.
+- Crop settings.
+- Existing theme presets.
+
+Archive old Todo data safely before removing its widget interface.
+
+---
+
+# 12. PERFORMANCE REQUIREMENTS
+
+The application must remain lightweight.
+
+Retain the existing shared Rust daemon architecture.
+
+Do not introduce a separate daemon for each widget.
+
+Do not create a separate Tauri WebView for each widget.
+
+Avoid unnecessary IPC polling.
+
+Use change notifications.
+
+Avoid repeatedly decoding large images.
+
+Avoid unnecessary multimedia initialization.
+
+Initialize audio only when needed.
+
+Use cached photo previews.
+
+Keep shadow effects restrained and cached where supported.
+
+Do not run unused slideshow timers.
+
+Do not create permanent high-frequency polling loops.
+
+Measure actual resource usage before and after the modifications.
+
+Report:
+- Rust backend RAM.
+- UI RAM.
+- CPU while idle.
+- CPU during music playback.
+- Startup time.
+- Process count.
+
+Do not fabricate performance results.
+
+---
+
+# 13. CHANGELOG — URWIDGETS v3.0.1
+
+Create a new v3.0.1 section in CHANGELOG.md.
+
+Preserve previous historical entries.
+
+Clearly explain that v3.0.1 corrects incomplete implementations from v3.0.0.
+
+Suggested structure:
+
+## [3.0.1] — Release date
+
+### Added
+- Independent configuration preferences for every widget.
+- Complete Photo Frame crop editor.
+- Persistent image positioning and zoom configuration.
+- Complete Music Player local folder configuration.
+- Direct online audio stream URL configuration.
+- Music playback queue and source management.
+- Proper widget-specific appearance settings.
+
+### Improved
+- Independent widget appearance overrides.
+- Immediate theme and accent updates.
+- Clock and Calendar customization.
+- Consistent macOS-inspired card elevation.
+- Improved Music Player configuration experience.
+- Improved Clock Alarm navigation and management.
+
+### Fixed
+- Restored missing Alarm Manager.
+- Restored alarm indicator on Clock.
+- Fixed Clock appearance synchronization.
+- Fixed Calendar appearance synchronization.
+- Fixed Pomodoro accent update without widget resizing.
+- Fixed missing Photo Frame crop functionality.
+- Fixed incomplete Music Player source configuration.
+- Fixed inconsistent widget preferences.
+
+### Removed
+- Todo List widget and associated active UI configuration.
+
+Only move an item to the completed changelog if its actual functionality has been implemented and verified.
+
+If a feature remains incomplete, clearly label it as incomplete in the development report instead of presenting it as completed.
+
+---
+
+# 14. MANDATORY IMPLEMENTATION AND TESTING PROCESS
+
+Do not finish after writing a plan.
+
+You must make actual code changes.
+
+Follow this sequence:
+
+## Stage 1 — Restore and Fix Core Functionality
+
+- Audit the codebase.
+- Restore Alarm Manager.
+- Fix Clock and Calendar appearance.
+- Fix Pomodoro accent updates.
+- Implement independent widget preferences.
+
+Test all of them before moving on.
+
+## Stage 2 — Complete Visual System
+
+- Implement visible 3D card shadows.
+- Ensure all widgets share the same elevation system.
+- Remove remaining hover artifacts.
+- Verify light, dark, accent, and widget style options.
+
+Generate and inspect a screenshot.
+
+## Stage 3 — Photo Frame
+
+- Implement crop editor.
+- Implement zoom.
+- Implement positioning.
+- Implement persistent crop configuration.
+- Implement slideshow and fixed-photo modes.
+
+Test with actual local image files.
+
+## Stage 4 — Music Player
+
+- Implement native local folder picker.
+- Scan local music.
+- Implement real audio playback.
+- Implement direct stream URL configuration.
+- Implement queue.
+- Implement metadata and album art.
+- Implement error handling.
+
+Test with actual audio sources.
+
+## Stage 5 — Remove Todo
+
+- Remove active widget registration.
+- Remove settings references.
+- Safely preserve existing data.
+- Verify it no longer appears as an available widget.
+
+## Stage 6 — Regression and Packaging
+
+- Build the complete application.
+- Test all existing widgets.
+- Test new functionality.
+- Inspect actual desktop screenshots.
+- Measure resource usage.
+- Update CHANGELOG.md.
+- Update README.md.
+- Update release documentation.
+- Generate the updated package if the environment supports it.
+
+---
+
+# 15. STRICT DEFINITION OF DONE
+
+URWidgets v3.0.1 is NOT complete until ALL the following pass.
+
+| Requirement | Acceptance test |
+|---|---|
+| Alarm | Create, edit, delete, repeat, snooze, and trigger real alarms |
+| Alarm indicator | Visible on main Clock view when enabled alarms exist |
+| Clock preferences | Independent Appearance, Theme, and Accent work |
+| Calendar preferences | Independent Appearance, Theme, and Accent work |
+| Pomodoro | Accent updates without resizing |
+| Per-widget preferences | Changing one widget does not overwrite another |
+| 3D effects | Shadows visibly elevate cards above wallpaper |
+| Photo crop | Drag, zoom, save, reset, and reload crop successfully |
+| Slideshow | Single-photo mode and configurable automatic interval |
+| Local Music | Select folder, scan tracks, and play actual files |
+| Online Music | Enter URL and play supported actual audio streams |
+| Music controls | Real playback, pause, seek, next, previous, volume |
+| Todo | Completely absent from active widget interface |
+| Database | Existing unrelated user data preserved |
+| Performance | No unnecessary processes or polling loops |
+| Release | Changelog accurately reflects tested features |
+
+Do not mark the project complete if even one critical acceptance test fails.
+
+---
+
+# 16. FINAL INSTRUCTION
+
+The previous implementation repeatedly introduced incomplete functionality while claiming features were complete.
+
+This must not happen again.
+
+Prioritize working functionality over visual demonstrations.
+
+Inspect the actual implementation.
+
+Modify the existing source code.
+
+Build the application.
+
+Test the real features.
+
+Inspect actual screenshots.
+
+Fix problems before reporting completion.
+
+Do not merely generate a list of suggested code changes.
+
+Do not provide pseudocode as the final implementation.
+
+Do not substitute mockups for functionality.
+
+Do not claim a feature works without testing it.
+
+**URWidgets v3.0.1 is a corrective release. Its success depends on actually completing the features that were promised but previously missing.**
+
+Project identity:
+
+**URWidgets — Your Desktop, Your Atmosphere.**
+
+Created by Haris Gitama  
+https://github.com/Harisgitama

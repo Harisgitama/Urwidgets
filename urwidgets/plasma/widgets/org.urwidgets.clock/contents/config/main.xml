@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+  <kcfgfile name=""/>
+  <group name="General">
+    <entry name="widgetKind" type="String">
+      <default>clock</default>
+    </entry>
+    <entry name="appearanceMode" type="String">
+      <default>light</default>
+    </entry>
+    <entry name="widgetStyle" type="String">
+      <default>default</default>
+    </entry>
+    <entry name="accentColorId" type="String">
+      <default>pink</default>
+    </entry>
+    <entry name="customAccentHex" type="String">
+      <default>#FF5A79</default>
+    </entry>
+    <entry name="themePreset" type="String">
+      <default>warm-minimal</default>
+    </entry>
+    <entry name="elevationLevel" type="Int">
+      <default>2</default>
+    </entry>
+    <entry name="backgroundColorOverride" type="String">
+      <default></default>
+    </entry>
+    <entry name="gradientEnabled" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="gradientPreset" type="String">
+      <default>peach</default>
+    </entry>
+    <entry name="borderOpacity" type="Double">
+      <default>0.42</default>
+    </entry>
+    <entry name="textColorOverride" type="String">
+      <default></default>
+    </entry>
+    <entry name="iconStyle" type="String">
+      <default>filled</default>
+    </entry>
+    <entry name="preferredFontFamily" type="String">
+      <default>auto</default>
+    </entry>
+    <entry name="surfaceOpacity" type="Double">
+      <default>0.86</default>
+    </entry>
+    <entry name="cornerRadius" type="Int">
+      <default>24</default>
+    </entry>
+    <entry name="customBgImage" type="String">
+      <default></default>
+    </entry>
+    <entry name="customBgFitMode" type="String">
+      <default>cover</default>
+    </entry>
+    <entry name="customBgPosition" type="String">
+      <default>center</default>
+    </entry>
+    <entry name="customBgOverlayMode" type="String">
+      <default>auto</default>
+    </entry>
+    <entry name="customBgOverlayOpacity" type="Double">
+      <default>0.35</default>
+    </entry>
+    <entry name="customBgTextContrast" type="String">
+      <default>auto</default>
+    </entry>
+    <entry name="use24HourClock" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="showClockSeconds" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="clockLocationLabel" type="String">
+      <default>Bandung</default>
+    </entry>
+    <entry name="defaultSnoozeMins" type="Int">
+      <default>10</default>
+    </entry>
+    <entry name="defaultRingtonePath" type="String">
+      <default>/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga</default>
+    </entry>
+    <entry name="alarmsJson" type="String">
+      <default></default>
+    </entry>
+    <entry name="todoItemsJson" type="String">
+      <default></default>
+    </entry>
+    <entry name="calendarLocale" type="String">
+      <default>en-US</default>
+    </entry>
+    <entry name="calendarFirstDay" type="Int">
+      <default>1</default>
+    </entry>
+    <entry name="weatherLocation" type="String">
+      <default>Bandung</default>
+    </entry>
+    <entry name="weatherCelsius" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="pomodoroStudyMins" type="Int">
+      <default>25</default>
+    </entry>
+    <entry name="pomodoroShortBreakMins" type="Int">
+      <default>5</default>
+    </entry>
+    <entry name="pomodoroLongBreakMins" type="Int">
+      <default>15</default>
+    </entry>
+    <entry name="photoDirectory" type="String">
+      <default></default>
+    </entry>
+    <entry name="photoSlideshowMode" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="photoIntervalSecs" type="Int">
+      <default>15</default>
+    </entry>
+    <entry name="photoCropsJson" type="String">
+      <default>{}</default>
+    </entry>
+    <entry name="musicSourceType" type="String">
+      <default>local</default>
+    </entry>
+    <entry name="musicFolderPath" type="String">
+      <default></default>
+    </entry>
+    <entry name="musicStreamUrl" type="String">
+      <default>https://ice2.somafm.com/groovesalad-128-mp3</default>
+    </entry>
+    <entry name="musicSavedStreamsJson" type="String">
+      <default>[]</default>
+    </entry>
+    <entry name="quickActionsColumns" type="Int">
+      <default>2</default>
+    </entry>
+    <entry name="sysmonIntervalSecs" type="Int">
+      <default>3</default>
+    </entry>
+  </group>
+</kcfg>

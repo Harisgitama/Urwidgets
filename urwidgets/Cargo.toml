@@ -1,0 +1,19 @@
+[workspace]
+members = [
+    "core",
+]
+resolver = "2"
+
+[workspace.package]
+version = "3.1.0"
+edition = "2021"
+authors = ["Haris Gitama <https://github.com/Harisgitama>"]
+license = "MIT"
+description = "Shared Rust backend daemon & library for URWidgets KDE Plasma 5 desktop widget ecosystem"
+
+[profile.release]
+opt-level = "s"
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+strip = true

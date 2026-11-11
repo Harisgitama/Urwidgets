@@ -1,0 +1,18 @@
+[Desktop Entry]
+Name=URWidgets — WidgetWall Ecosystem
+Comment=macOS-inspired KDE Plasma 5 desktop widget ecosystem (Clock & Alarms, Calendar, Pomodoro, Weather, Notes, Agenda, Photo Frame, Music Player, Quick Actions, System Monitor)
+Icon=preferences-desktop-theme
+Type=Service
+X-KDE-ServiceTypes=Plasma/Applet
+
+X-Plasma-API=declarativeappletscript
+X-Plasma-MainScript=ui/main.qml
+
+X-KDE-PluginInfo-Author=Haris Gitama
+X-KDE-PluginInfo-Email=https://github.com/Harisgitama
+X-KDE-PluginInfo-Name=org.urwidgets.ecosystem
+X-KDE-PluginInfo-Version=3.0.1
+X-KDE-PluginInfo-Website=https://github.com/Harisgitama
+X-KDE-PluginInfo-Category=System Information
+X-KDE-PluginInfo-License=MIT
+X-KDE-PluginInfo-EnabledByDefault=true
