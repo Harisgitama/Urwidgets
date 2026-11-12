@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Download } from 'lucide-react';
-import { downloadReleaseArtifact } from '@/lib/download-release';
 import {
   ThemeSpec,
   WidgetInstanceConfig,
@@ -45,7 +43,6 @@ import {
   WidgetBackgroundConfig,
   DEFAULT_WIDGET_BACKGROUND,
   INITIAL_WIDGET_BACKGROUNDS,
-  DEVELOPER_ATTRIBUTION,
   KWinCompositorConfig,
   DEFAULT_KWIN_COMPOSITOR_CONFIG,
 } from '@/lib/urwidgets-engine';
@@ -96,7 +93,6 @@ const DEFAULT_AGENDA_EVENTS: AgendaEvent[] = [
 ];
 
 export default function HomePage() {
-  const [showOfficialSite, setShowOfficialSite] = useState(true);
   const [activeNav, setActiveNav] = useState<
     'desktop' | 'control-center' | 'source' | 'architecture'
   >('desktop');
@@ -105,9 +101,6 @@ export default function HomePage() {
     tab: 'desktop' | 'control-center' | 'source' | 'architecture'
   ) => {
     setActiveNav(tab);
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }
   };
 
   // macOS Appearance & WidgetWall state (Global across all widgets)
@@ -805,509 +798,268 @@ export default function HomePage() {
     SYSTEM_FONT_OPTIONS.find((f) => f.id === systemFontId)?.cssStack ||
     SYSTEM_FONT_OPTIONS[0].cssStack;
 
-  const isShellDark =
-    appearanceMode === 'dark' ||
-    activeNav === 'source' ||
-    activeNav === 'architecture';
+  const showcaseStatusSummary = `Style: ${widgetStyle} · Mode: ${appearanceMode} · Profile: ${kwinCompositorConfig.performanceProfile} · Accent: ${
+    accentColorId === 'custom' ? customAccentHex : accentColorId
+  } · ${NATIVE_SOURCE_FILES.length} Native QML/Rust Files`;
 
-  if (showOfficialSite) {
-    return (
-      <OfficialLandingWebsite
-        onOpenInteractiveStudio={() => {
-          setShowOfficialSite(false);
-          if (typeof window !== 'undefined') {
-            window.scrollTo({ top: 0, behavior: 'instant' });
+  const showcaseContent = (
+    <div style={{ fontFamily: selectedFontCss }}>
+      {activeNav === 'desktop' && (
+        <PlasmaDesktopView
+          themes={themes}
+          activeThemeId={activeThemeId}
+          onSelectTheme={handleSelectTheme}
+          appearanceMode={appearanceMode}
+          onChangeAppearanceMode={(mode) => {
+            setAppearanceMode(mode);
+            appendIpcLog(`Global Appearance mode -> "${mode}"`);
+          }}
+          widgetStyle={widgetStyle}
+          onChangeWidgetStyle={(style) => {
+            setWidgetStyle(style);
+            appendIpcLog(`Global Widget surface style -> "${style}"`);
+          }}
+          accentColorId={accentColorId}
+          onChangeAccentColorId={(accent) => {
+            setAccentColorId(accent);
+            appendIpcLog(`Global Accent color -> "${accent}"`);
+          }}
+          customAccentHex={customAccentHex}
+          onChangeCustomAccentHex={handleChangeCustomAccentHex}
+          systemFontId={systemFontId}
+          onChangeSystemFontId={(fontId) => {
+            setSystemFontId(fontId);
+            appendIpcLog(`System font family -> "${fontId}"`);
+          }}
+          globalElevation={globalElevation}
+          kwinCompositorConfig={kwinCompositorConfig}
+          onChangeKwinCompositorConfig={(nextCfg) => {
+            setKwinCompositorConfig(nextCfg);
+            appendIpcLog(
+              `org.urwidgets.Daemon1.SetLiquidGlassProfile(profile="${nextCfg.performanceProfile}", fallback="${nextCfg.fallbackMode}", blur=${nextCfg.blurRadius}px)`
+            );
+          }}
+          widgets={widgets}
+          onToggleWidget={handleToggleWidget}
+          onResizeWidget={handleResizeWidget}
+          onSetWidgetThemeOverride={handleSetWidgetThemeOverride}
+          onUpdateWidgetPreferences={handleUpdateWidgetPreferences}
+          onResetSingleWidgetPreferences={handleResetSingleWidgetPreferences}
+          onResetWidgets={handleResetAllSettings}
+          widgetBackgrounds={widgetBackgrounds}
+          onUpdateWidgetBackground={handleUpdateWidgetBackground}
+          onResetWidgetBackground={handleResetWidgetBackground}
+          now={now}
+          use24h={use24h}
+          onToggle24h={() => setUse24h((p) => !p)}
+          showSeconds={showSeconds}
+          onToggleSeconds={() => setShowSeconds((p) => !p)}
+          clockMonoFont={clockMonoFont}
+          onToggleClockFont={() => setClockMonoFont((p) => !p)}
+          alarms={alarms}
+          dueAlarmQueue={dueAlarmQueue}
+          onToggleAlarm={handleToggleAlarm}
+          onUpsertAlarm={handleUpsertAlarm}
+          onDeleteAlarm={handleDeleteAlarm}
+          onSetGlobalAlarmRingtone={handleSetGlobalAlarmRingtone}
+          onSnoozeDueAlarm={handleSnoozeDueAlarm}
+          onStopDueAlarm={handleStopDueAlarm}
+          onTriggerTestAlarm={handleTriggerTestAlarm}
+          notes={notes}
+          onUpsertNote={handleUpsertNote}
+          onDeleteNote={handleDeleteNote}
+          onTogglePinNote={handleTogglePinNote}
+          calYear={calYear}
+          calMonth={calMonth}
+          calLocale={calLocale}
+          calFirstDay={calFirstDay}
+          onChangeCalMonth={handleChangeCalMonth}
+          onToggleCalLocale={() =>
+            setCalLocale((p) => (p === 'en-US' ? 'id-ID' : 'en-US'))
           }
-        }}
-      />
-    );
-  }
+          onToggleCalFirstDay={() =>
+            setCalFirstDay((p) => (p === 1 ? 0 : 1))
+          }
+          weatherCity={weatherCity}
+          onChangeWeatherCity={(c) => {
+            setWeatherCity(c);
+            appendIpcLog(`Weather location updated -> "${c}"`);
+          }}
+          useCelsius={useCelsius}
+          onToggleCelsius={() => setUseCelsius((p) => !p)}
+          weatherOffline={weatherOffline}
+          onToggleWeatherOffline={() => setWeatherOffline((p) => !p)}
+          onRefreshWeather={() =>
+            appendIpcLog(
+              `org.urwidgets.Daemon1.RefreshWeather("${weatherCity}") -> 200 OK`
+            )
+          }
+          pomodoro={pomodoro}
+          onPomodoroStartPause={() => {
+            setPomodoro((prev) =>
+              transitionPomodoro(prev, {
+                type: prev.status === 'Running' ? 'PAUSE' : 'START',
+              })
+            );
+            appendIpcLog(
+              `org.urwidgets.Daemon1.PomodoroAction("${
+                pomodoro.status === 'Running' ? 'pause' : 'start'
+              }")`
+            );
+          }}
+          onPomodoroReset={() => {
+            setPomodoro((prev) =>
+              transitionPomodoro(prev, { type: 'RESET' })
+            );
+            appendIpcLog('org.urwidgets.Daemon1.PomodoroAction("reset")');
+          }}
+          onPomodoroPhase={(phase: PomodoroPhase) => {
+            setPomodoro((prev) =>
+              transitionPomodoro(prev, { type: 'SET_PHASE', phase })
+            );
+            appendIpcLog(
+              `org.urwidgets.Daemon1.PomodoroAction("phase:${phase}")`
+            );
+          }}
+          onUpdatePomodoroDurations={(study, shortB, longB) => {
+            setPomodoro((prev) =>
+              transitionPomodoro(prev, {
+                type: 'UPDATE_DURATIONS',
+                studyMins: study,
+                shortBreakMins: shortB,
+                longBreakMins: longB,
+              })
+            );
+            appendIpcLog(
+              `org.urwidgets.Daemon1.PomodoroAction("durations:${study}:${shortB}:${longB}")`
+            );
+          }}
+          todos={todos}
+          onAddTodo={handleAddTodo}
+          onToggleTodo={handleToggleTodo}
+          onUpdateTodo={handleUpdateTodo}
+          onDeleteTodo={handleDeleteTodo}
+          onClearCompletedTodos={handleClearCompletedTodos}
+          agendaEvents={agendaEvents}
+          onAddAgendaEvent={handleAddAgendaEvent}
+          onUpdateAgendaEvent={(id, title, startTime, endTime, category) => {
+            setAgendaEvents((prev) =>
+              prev.map((ev) =>
+                ev.id === id
+                  ? { ...ev, title, startTime, endTime, category }
+                  : ev
+              )
+            );
+            appendIpcLog(
+              `org.urwidgets.Daemon1.UpdateAgendaEvent("${id}", "${title}")`
+            );
+          }}
+          onToggleAgendaEvent={handleToggleAgendaEvent}
+          onDeleteAgendaEvent={handleDeleteAgendaEvent}
+          onTriggerQuickAction={(label, cmd) =>
+            appendIpcLog(`XDG Safe Exec [${label}] -> "${cmd}"`)
+          }
+          lastIpcMessage={ipcLog[0] || 'Ready'}
+          sysCpu={sysCpu}
+          sysMemMb={sysMemMb}
+          sysMemPct={sysMemPct}
+          sysIntervalSecs={sysIntervalSecs}
+          onChangeSysInterval={(secs) => {
+            setSysIntervalSecs(secs);
+            appendIpcLog(`SystemMonitor poll interval -> ${secs}s`);
+          }}
+          onOpenControlCenter={() => switchTab('control-center')}
+        />
+      )}
+
+      {activeNav === 'control-center' && (
+        <ControlCenterView
+          themes={themes}
+          activeThemeId={activeThemeId}
+          onSelectTheme={handleSelectTheme}
+          onUpdateActiveTheme={handleUpdateActiveTheme}
+          onCreateCustomTheme={handleCreateCustomTheme}
+          onDeleteCustomTheme={handleDeleteCustomTheme}
+          onImportThemeJson={handleImportThemeJson}
+          appearanceMode={appearanceMode}
+          onChangeAppearanceMode={(mode) => {
+            setAppearanceMode(mode);
+            appendIpcLog(`Global Appearance mode -> "${mode}"`);
+          }}
+          widgetStyle={widgetStyle}
+          onChangeWidgetStyle={(style) => {
+            setWidgetStyle(style);
+            appendIpcLog(`Global Widget surface style -> "${style}"`);
+          }}
+          accentColorId={accentColorId}
+          onChangeAccentColorId={(accent) => {
+            setAccentColorId(accent);
+            appendIpcLog(`Global Accent color -> "${accent}"`);
+          }}
+          customAccentHex={customAccentHex}
+          onChangeCustomAccentHex={handleChangeCustomAccentHex}
+          systemFontId={systemFontId}
+          onChangeSystemFontId={(fontId) => {
+            setSystemFontId(fontId);
+            appendIpcLog(`System font family -> "${fontId}"`);
+          }}
+          globalElevation={globalElevation}
+          onChangeGlobalElevation={(level) => {
+            setGlobalElevation(level);
+            appendIpcLog(`Global elevation level -> L${level}`);
+          }}
+          kwinCompositorConfig={kwinCompositorConfig}
+          onChangeKwinCompositorConfig={(nextCfg) => {
+            setKwinCompositorConfig(nextCfg);
+            appendIpcLog(
+              `org.urwidgets.Daemon1.SetLiquidGlassProfile(profile="${nextCfg.performanceProfile}", fallback="${nextCfg.fallbackMode}", blur=${nextCfg.blurRadius}px)`
+            );
+          }}
+          widgets={widgets}
+          onToggleWidget={handleToggleWidget}
+          onResizeWidget={handleResizeWidget}
+          onSetWidgetThemeOverride={handleSetWidgetThemeOverride}
+          onSetWidgetElevationOverride={handleSetWidgetElevationOverride}
+          onUpdateWidgetPreferences={handleUpdateWidgetPreferences}
+          onResetSingleWidgetPreferences={handleResetSingleWidgetPreferences}
+          widgetBackgrounds={widgetBackgrounds}
+          onUpdateWidgetBackground={handleUpdateWidgetBackground}
+          onResetWidgetBackground={handleResetWidgetBackground}
+          onResetAllSettings={handleResetAllSettings}
+          agendaEvents={agendaEvents}
+          alarms={alarms}
+          notes={notes}
+          archivedTodosCount={todos.length}
+          pomodoro={pomodoro}
+          onUpdatePomodoroDurations={(study, shortB, longB) => {
+            setPomodoro((prev) =>
+              transitionPomodoro(prev, {
+                type: 'UPDATE_DURATIONS',
+                studyMins: study,
+                shortBreakMins: shortB,
+                longBreakMins: longB,
+              })
+            );
+            appendIpcLog(
+              `Updated Pomodoro durations: ${study}m / ${shortB}m / ${longB}m`
+            );
+          }}
+          ipcLog={ipcLog}
+        />
+      )}
+
+      {activeNav === 'source' && <SourceAndPackagesView />}
+
+      {activeNav === 'architecture' && <ArchitectureRoadmapView />}
+    </div>
+  );
 
   return (
-    <div
-      className={`min-h-screen flex flex-col transition-colors duration-300 ${
-        isShellDark
-          ? 'bg-[#111216] text-[#F5F5F7]'
-          : 'bg-[#F4F1EA] text-[#1D1D1F]'
-      }`}
-      style={{ fontFamily: selectedFontCss }}
-    >
-      {/* Strict 3-Zone Top Bar Contract */}
-      <header
-        className={`flex items-center justify-between gap-8 px-6 py-3.5 border-b sticky top-0 z-30 backdrop-blur-xl transition-colors ${
-          isShellDark
-            ? 'border-white/10 bg-[#111216]/90'
-            : 'border-black/[0.08] bg-[#F7F5F0]/90'
-        }`}
-      >
-        {/* Zone 1: Brand Title (Click to return to Official Landing Website) */}
-        <a
-          href="#top"
-          onClick={(e) => {
-            e.preventDefault();
-            setShowOfficialSite(true);
-          }}
-          className={`text-[17px] font-semibold tracking-tight whitespace-nowrap shrink-0 ${
-            isShellDark ? 'text-white' : 'text-[#1D1D1F]'
-          }`}
-        >
-          ← URWidgets Official Site
-        </a>
-
-        {/* Zone 2: 4 concise single-line navigation links */}
-        <nav
-          className="flex items-center gap-6 text-[13px] font-medium overflow-x-auto"
-          aria-label="Primary Navigation"
-        >
-          <button
-            type="button"
-            onClick={() => switchTab('desktop')}
-            className={`transition-colors whitespace-nowrap shrink-0 pb-0.5 ${
-              activeNav === 'desktop'
-                ? isShellDark
-                  ? 'text-white border-b-2 border-white font-semibold'
-                  : 'text-[#1D1D1F] border-b-2 border-[#1D1D1F] font-semibold'
-                : isShellDark
-                  ? 'text-white/60 hover:text-white'
-                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-            }`}
-          >
-            WidgetWall Desktop
-          </button>
-          <button
-            type="button"
-            onClick={() => switchTab('control-center')}
-            className={`transition-colors whitespace-nowrap shrink-0 pb-0.5 ${
-              activeNav === 'control-center'
-                ? isShellDark
-                  ? 'text-white border-b-2 border-white font-semibold'
-                  : 'text-[#1D1D1F] border-b-2 border-[#1D1D1F] font-semibold'
-                : isShellDark
-                  ? 'text-white/60 hover:text-white'
-                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-            }`}
-          >
-            Appearance Studio
-          </button>
-          <button
-            type="button"
-            onClick={() => switchTab('source')}
-            className={`transition-colors whitespace-nowrap shrink-0 pb-0.5 ${
-              activeNav === 'source'
-                ? 'text-sky-400 border-b-2 border-sky-400 font-semibold'
-                : isShellDark
-                  ? 'text-white/60 hover:text-white'
-                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-            }`}
-          >
-            Source & Packages
-          </button>
-          <button
-            type="button"
-            onClick={() => switchTab('architecture')}
-            className={`transition-colors whitespace-nowrap shrink-0 pb-0.5 ${
-              activeNav === 'architecture'
-                ? 'text-sky-400 border-b-2 border-sky-400 font-semibold'
-                : isShellDark
-                  ? 'text-white/60 hover:text-white'
-                  : 'text-[#6E6E73] hover:text-[#1D1D1F]'
-            }`}
-          >
-            Architecture & Audit
-          </button>
-        </nav>
-
-        {/* Zone 3: Primary download actions (.zip & .deb) */}
-        <div className="flex items-center gap-2 shrink-0">
-          <a
-            href="/api/download/urwidgets-bundle.zip"
-            download="urwidgets-bundle.zip"
-            onClick={(e) => {
-              e.preventDefault();
-              void downloadReleaseArtifact('urwidgets-bundle.zip');
-            }}
-            className={`px-3 py-1.5 text-[12px] font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 border cursor-pointer ${
-              isShellDark
-                ? 'border-white/20 text-white hover:bg-white/10'
-                : 'border-black/15 text-[#1D1D1F] hover:bg-black/5'
-            }`}
-          >
-            <Download className="w-3.5 h-3.5" />
-            Download .zip (v3.1.0)
-          </a>
-          <a
-            href="/api/download/urwidgets-bundle.deb"
-            download="urwidgets-bundle.deb"
-            onClick={(e) => {
-              e.preventDefault();
-              void downloadReleaseArtifact('urwidgets-bundle.deb');
-            }}
-            className={`px-3.5 py-1.5 text-[12px] font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 cursor-pointer ${
-              isShellDark
-                ? 'text-slate-950 bg-white hover:bg-slate-200'
-                : 'text-white bg-[#1D1D1F] hover:bg-black/80 shadow-sm'
-            }`}
-          >
-            <Download className="w-3.5 h-3.5" />
-            Download .deb (v3.1.0)
-          </a>
-        </div>
-      </header>
-
-      {/* Main Content Container */}
-      <main className="flex-1 max-w-[1440px] w-full mx-auto px-4 sm:px-6 py-3 space-y-3">
-        {/* Compact Context Header */}
-        <div
-          className={`flex flex-wrap items-center justify-between gap-2 pb-2 border-b ${
-            isShellDark ? 'border-white/10' : 'border-black/[0.08]'
-          }`}
-        >
-          <div className="flex flex-wrap items-baseline gap-3">
-            <h1
-              className={`text-base sm:text-lg font-semibold tracking-tight ${
-                isShellDark ? 'text-white' : 'text-[#1D1D1F]'
-              }`}
-            >
-              Your Desktop, Your Atmosphere — macOS-Inspired KDE Plasma 5
-              WidgetWall (v3.1.0)
-            </h1>
-            <span
-              className={`text-[11px] font-medium hidden xl:inline ${
-                isShellDark ? 'text-white/55' : 'text-[#86868B]'
-              }`}
-            >
-              Linux Mint · KDE Plasma 5.27 LTS · Qt 5.15 QML · Rust Daemon
-            </span>
-          </div>
-
-          <div
-            className={`flex flex-wrap items-center gap-2 text-[11px] font-mono tabular-nums ${
-              isShellDark ? 'text-white/60' : 'text-[#6E6E73]'
-            }`}
-          >
-            <span>Style: {widgetStyle}</span>
-            <span aria-hidden="true">·</span>
-            <span>Mode: {appearanceMode}</span>
-            <span aria-hidden="true">·</span>
-            <span>Profile: {kwinCompositorConfig.performanceProfile}</span>
-            <span aria-hidden="true">·</span>
-            <span>
-              Accent:{' '}
-              {accentColorId === 'custom' ? customAccentHex : accentColorId}
-            </span>
-            <span aria-hidden="true">·</span>
-            <span>{NATIVE_SOURCE_FILES.length} Native QML/Rust Files</span>
-          </div>
-        </div>
-
-        {/* Active View */}
-        {activeNav === 'desktop' && (
-          <PlasmaDesktopView
-            themes={themes}
-            activeThemeId={activeThemeId}
-            onSelectTheme={handleSelectTheme}
-            appearanceMode={appearanceMode}
-            onChangeAppearanceMode={(mode) => {
-              setAppearanceMode(mode);
-              appendIpcLog(`Global Appearance mode -> "${mode}"`);
-            }}
-            widgetStyle={widgetStyle}
-            onChangeWidgetStyle={(style) => {
-              setWidgetStyle(style);
-              appendIpcLog(`Global Widget surface style -> "${style}"`);
-            }}
-            accentColorId={accentColorId}
-            onChangeAccentColorId={(accent) => {
-              setAccentColorId(accent);
-              appendIpcLog(`Global Accent color -> "${accent}"`);
-            }}
-            customAccentHex={customAccentHex}
-            onChangeCustomAccentHex={handleChangeCustomAccentHex}
-            systemFontId={systemFontId}
-            onChangeSystemFontId={(fontId) => {
-              setSystemFontId(fontId);
-              appendIpcLog(`System font family -> "${fontId}"`);
-            }}
-            globalElevation={globalElevation}
-            kwinCompositorConfig={kwinCompositorConfig}
-            onChangeKwinCompositorConfig={(nextCfg) => {
-              setKwinCompositorConfig(nextCfg);
-              appendIpcLog(
-                `org.urwidgets.Daemon1.SetLiquidGlassProfile(profile="${nextCfg.performanceProfile}", fallback="${nextCfg.fallbackMode}", blur=${nextCfg.blurRadius}px)`
-              );
-            }}
-            widgets={widgets}
-            onToggleWidget={handleToggleWidget}
-            onResizeWidget={handleResizeWidget}
-            onSetWidgetThemeOverride={handleSetWidgetThemeOverride}
-            onUpdateWidgetPreferences={handleUpdateWidgetPreferences}
-            onResetSingleWidgetPreferences={handleResetSingleWidgetPreferences}
-            onResetWidgets={handleResetAllSettings}
-            widgetBackgrounds={widgetBackgrounds}
-            onUpdateWidgetBackground={handleUpdateWidgetBackground}
-            onResetWidgetBackground={handleResetWidgetBackground}
-            now={now}
-            use24h={use24h}
-            onToggle24h={() => setUse24h((p) => !p)}
-            showSeconds={showSeconds}
-            onToggleSeconds={() => setShowSeconds((p) => !p)}
-            clockMonoFont={clockMonoFont}
-            onToggleClockFont={() => setClockMonoFont((p) => !p)}
-            alarms={alarms}
-            dueAlarmQueue={dueAlarmQueue}
-            onToggleAlarm={handleToggleAlarm}
-            onUpsertAlarm={handleUpsertAlarm}
-            onDeleteAlarm={handleDeleteAlarm}
-            onSetGlobalAlarmRingtone={handleSetGlobalAlarmRingtone}
-            onSnoozeDueAlarm={handleSnoozeDueAlarm}
-            onStopDueAlarm={handleStopDueAlarm}
-            onTriggerTestAlarm={handleTriggerTestAlarm}
-            notes={notes}
-            onUpsertNote={handleUpsertNote}
-            onDeleteNote={handleDeleteNote}
-            onTogglePinNote={handleTogglePinNote}
-            calYear={calYear}
-            calMonth={calMonth}
-            calLocale={calLocale}
-            calFirstDay={calFirstDay}
-            onChangeCalMonth={handleChangeCalMonth}
-            onToggleCalLocale={() =>
-              setCalLocale((p) => (p === 'en-US' ? 'id-ID' : 'en-US'))
-            }
-            onToggleCalFirstDay={() =>
-              setCalFirstDay((p) => (p === 1 ? 0 : 1))
-            }
-            weatherCity={weatherCity}
-            onChangeWeatherCity={(c) => {
-              setWeatherCity(c);
-              appendIpcLog(`Weather location updated -> "${c}"`);
-            }}
-            useCelsius={useCelsius}
-            onToggleCelsius={() => setUseCelsius((p) => !p)}
-            weatherOffline={weatherOffline}
-            onToggleWeatherOffline={() => setWeatherOffline((p) => !p)}
-            onRefreshWeather={() =>
-              appendIpcLog(
-                `org.urwidgets.Daemon1.RefreshWeather("${weatherCity}") -> 200 OK`
-              )
-            }
-            pomodoro={pomodoro}
-            onPomodoroStartPause={() => {
-              setPomodoro((prev) =>
-                transitionPomodoro(prev, {
-                  type: prev.status === 'Running' ? 'PAUSE' : 'START',
-                })
-              );
-              appendIpcLog(
-                `org.urwidgets.Daemon1.PomodoroAction("${
-                  pomodoro.status === 'Running' ? 'pause' : 'start'
-                }")`
-              );
-            }}
-            onPomodoroReset={() => {
-              setPomodoro((prev) =>
-                transitionPomodoro(prev, { type: 'RESET' })
-              );
-              appendIpcLog('org.urwidgets.Daemon1.PomodoroAction("reset")');
-            }}
-            onPomodoroPhase={(phase: PomodoroPhase) => {
-              setPomodoro((prev) =>
-                transitionPomodoro(prev, { type: 'SET_PHASE', phase })
-              );
-              appendIpcLog(
-                `org.urwidgets.Daemon1.PomodoroAction("phase:${phase}")`
-              );
-            }}
-            onUpdatePomodoroDurations={(study, shortB, longB) => {
-              setPomodoro((prev) =>
-                transitionPomodoro(prev, {
-                  type: 'UPDATE_DURATIONS',
-                  studyMins: study,
-                  shortBreakMins: shortB,
-                  longBreakMins: longB,
-                })
-              );
-              appendIpcLog(
-                `org.urwidgets.Daemon1.PomodoroAction("durations:${study}:${shortB}:${longB}")`
-              );
-            }}
-            todos={todos}
-            onAddTodo={handleAddTodo}
-            onToggleTodo={handleToggleTodo}
-            onUpdateTodo={handleUpdateTodo}
-            onDeleteTodo={handleDeleteTodo}
-            onClearCompletedTodos={handleClearCompletedTodos}
-            agendaEvents={agendaEvents}
-            onAddAgendaEvent={handleAddAgendaEvent}
-            onUpdateAgendaEvent={(id, title, startTime, endTime, category) => {
-              setAgendaEvents((prev) =>
-                prev.map((ev) =>
-                  ev.id === id
-                    ? { ...ev, title, startTime, endTime, category }
-                    : ev
-                )
-              );
-              appendIpcLog(
-                `org.urwidgets.Daemon1.UpdateAgendaEvent("${id}", "${title}")`
-              );
-            }}
-            onToggleAgendaEvent={handleToggleAgendaEvent}
-            onDeleteAgendaEvent={handleDeleteAgendaEvent}
-            onTriggerQuickAction={(label, cmd) =>
-              appendIpcLog(`XDG Safe Exec [${label}] -> "${cmd}"`)
-            }
-            lastIpcMessage={ipcLog[0] || 'Ready'}
-            sysCpu={sysCpu}
-            sysMemMb={sysMemMb}
-            sysMemPct={sysMemPct}
-            sysIntervalSecs={sysIntervalSecs}
-            onChangeSysInterval={(secs) => {
-              setSysIntervalSecs(secs);
-              appendIpcLog(`SystemMonitor poll interval -> ${secs}s`);
-            }}
-            onOpenControlCenter={() => switchTab('control-center')}
-          />
-        )}
-
-        {activeNav === 'control-center' && (
-          <ControlCenterView
-            themes={themes}
-            activeThemeId={activeThemeId}
-            onSelectTheme={handleSelectTheme}
-            onUpdateActiveTheme={handleUpdateActiveTheme}
-            onCreateCustomTheme={handleCreateCustomTheme}
-            onDeleteCustomTheme={handleDeleteCustomTheme}
-            onImportThemeJson={handleImportThemeJson}
-            appearanceMode={appearanceMode}
-            onChangeAppearanceMode={(mode) => {
-              setAppearanceMode(mode);
-              appendIpcLog(`Global Appearance mode -> "${mode}"`);
-            }}
-            widgetStyle={widgetStyle}
-            onChangeWidgetStyle={(style) => {
-              setWidgetStyle(style);
-              appendIpcLog(`Global Widget surface style -> "${style}"`);
-            }}
-            accentColorId={accentColorId}
-            onChangeAccentColorId={(accent) => {
-              setAccentColorId(accent);
-              appendIpcLog(`Global Accent color -> "${accent}"`);
-            }}
-            customAccentHex={customAccentHex}
-            onChangeCustomAccentHex={handleChangeCustomAccentHex}
-            systemFontId={systemFontId}
-            onChangeSystemFontId={(fontId) => {
-              setSystemFontId(fontId);
-              appendIpcLog(`System font family -> "${fontId}"`);
-            }}
-            globalElevation={globalElevation}
-            onChangeGlobalElevation={(level) => {
-              setGlobalElevation(level);
-              appendIpcLog(`Global elevation level -> L${level}`);
-            }}
-            kwinCompositorConfig={kwinCompositorConfig}
-            onChangeKwinCompositorConfig={(nextCfg) => {
-              setKwinCompositorConfig(nextCfg);
-              appendIpcLog(
-                `org.urwidgets.Daemon1.SetLiquidGlassProfile(profile="${nextCfg.performanceProfile}", fallback="${nextCfg.fallbackMode}", blur=${nextCfg.blurRadius}px)`
-              );
-            }}
-            widgets={widgets}
-            onToggleWidget={handleToggleWidget}
-            onResizeWidget={handleResizeWidget}
-            onSetWidgetThemeOverride={handleSetWidgetThemeOverride}
-            onSetWidgetElevationOverride={handleSetWidgetElevationOverride}
-            onUpdateWidgetPreferences={handleUpdateWidgetPreferences}
-            onResetSingleWidgetPreferences={handleResetSingleWidgetPreferences}
-            widgetBackgrounds={widgetBackgrounds}
-            onUpdateWidgetBackground={handleUpdateWidgetBackground}
-            onResetWidgetBackground={handleResetWidgetBackground}
-            onResetAllSettings={handleResetAllSettings}
-            agendaEvents={agendaEvents}
-            alarms={alarms}
-            notes={notes}
-            archivedTodosCount={todos.length}
-            pomodoro={pomodoro}
-            onUpdatePomodoroDurations={(study, shortB, longB) => {
-              setPomodoro((prev) =>
-                transitionPomodoro(prev, {
-                  type: 'UPDATE_DURATIONS',
-                  studyMins: study,
-                  shortBreakMins: shortB,
-                  longBreakMins: longB,
-                })
-              );
-              appendIpcLog(
-                `Updated Pomodoro durations: ${study}m / ${shortB}m / ${longB}m`
-              );
-            }}
-            ipcLog={ipcLog}
-          />
-        )}
-
-        {activeNav === 'source' && <SourceAndPackagesView />}
-
-        {activeNav === 'architecture' && <ArchitectureRoadmapView />}
-      </main>
-
-      {/* Clean Minimal Footer with Author Attribution */}
-      <footer
-        className={`border-t px-6 py-4 text-xs flex flex-wrap items-center justify-between gap-4 max-w-[1440px] w-full mx-auto ${
-          isShellDark
-            ? 'border-white/10 text-white/50'
-            : 'border-black/[0.08] text-[#86868B]'
-        }`}
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <span>{DEVELOPER_ATTRIBUTION.footerSummary}</span>
-          <span aria-hidden="true">·</span>
-          <a
-            href={DEVELOPER_ATTRIBUTION.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-medium hover:underline transition-colors"
-          >
-            GitHub ↗
-          </a>
-        </div>
-        <div className="flex items-center gap-4">
-          <a
-            href="/api/download/urwidgets.plasmoid"
-            download="urwidgets.plasmoid"
-            onClick={(e) => {
-              e.preventDefault();
-              void downloadReleaseArtifact('urwidgets.plasmoid');
-            }}
-            className="hover:underline transition-colors cursor-pointer"
-          >
-            urwidgets.plasmoid
-          </a>
-          <span aria-hidden="true">·</span>
-          <a
-            href="/api/download/urwidgets-bundle.deb"
-            download="urwidgets-bundle.deb"
-            onClick={(e) => {
-              e.preventDefault();
-              void downloadReleaseArtifact('urwidgets-bundle.deb');
-            }}
-            className="hover:underline transition-colors cursor-pointer"
-          >
-            urwidgets-bundle.deb
-          </a>
-          <span aria-hidden="true">·</span>
-          <a
-            href="/api/download/urwidgets-source.tar.gz"
-            download="urwidgets-source.tar.gz"
-            onClick={(e) => {
-              e.preventDefault();
-              void downloadReleaseArtifact('urwidgets-source.tar.gz');
-            }}
-            className="hover:underline transition-colors cursor-pointer"
-          >
-            urwidgets-source.tar.gz
-          </a>
-        </div>
-      </footer>
-    </div>
+    <OfficialLandingWebsite
+      activeShowcaseTab={activeNav}
+      onChangeShowcaseTab={switchTab}
+      showcaseContent={showcaseContent}
+      showcaseStatusSummary={showcaseStatusSummary}
+    />
   );
 }

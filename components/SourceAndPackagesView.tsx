@@ -12,12 +12,12 @@ import {
   FolderTree,
 } from 'lucide-react';
 import { NATIVE_SOURCE_FILES, NativeSourceFile } from '@/lib/native-source-registry';
-import { downloadReleaseArtifact } from '@/lib/download-release';
+import { downloadReleaseArtifact, withBasePath } from '@/lib/download-release';
 
 const ARTIFACT_PACKAGES = [
   {
     name: 'URWidgets_3.1.0_amd64.deb',
-    href: '/api/download/URWidgets_3.1.0_amd64.deb',
+    href: withBasePath('/releases/URWidgets_3.1.0_amd64.deb'),
     size: 'v3.1.0 (495 KB xz)',
     kind: 'Official Debian Release Package (.deb) · v3.1.0',
     description:
@@ -26,7 +26,7 @@ const ARTIFACT_PACKAGES = [
   },
   {
     name: 'urwidgets-bundle.deb',
-    href: '/api/download/urwidgets-bundle.deb',
+    href: withBasePath('/releases/urwidgets-bundle.deb'),
     size: 'v3.1.0 (495 KB xz)',
     kind: 'Debian Complete 10-Widget Bundle (.deb) · v3.1.0',
     description:
@@ -35,7 +35,7 @@ const ARTIFACT_PACKAGES = [
   },
   {
     name: 'urwidgets-bundle.zip',
-    href: '/api/download/urwidgets-bundle.zip',
+    href: withBasePath('/releases/urwidgets-bundle.zip'),
     size: 'v3.1.0 (1.6 MB)',
     kind: 'Complete Source & Plasmoid Bundle (.zip) · v3.1.0',
     description:
@@ -44,7 +44,7 @@ const ARTIFACT_PACKAGES = [
   },
   {
     name: 'urwidgets.plasmoid',
-    href: '/api/download/urwidgets.plasmoid',
+    href: withBasePath('/releases/urwidgets.plasmoid'),
     size: 'v3.1.0 (477 KB)',
     kind: 'Native KDE Plasma 5 Applet (.plasmoid) · v3.1.0',
     description:
@@ -53,7 +53,7 @@ const ARTIFACT_PACKAGES = [
   },
   {
     name: 'urwidgets-source.tar.gz',
-    href: '/api/download/urwidgets-source.tar.gz',
+    href: withBasePath('/releases/urwidgets-source.tar.gz'),
     size: 'v3.1.0 (1.5 MB)',
     kind: 'Complete Compilable Source Tarball (.tar.gz) · v3.1.0',
     description:
@@ -62,7 +62,7 @@ const ARTIFACT_PACKAGES = [
   },
   {
     name: 'SHA256SUMS',
-    href: '/api/download/SHA256SUMS',
+    href: withBasePath('/releases/SHA256SUMS'),
     size: 'v3.1.0 (SHA-256)',
     kind: 'Cryptographic Checksum Manifest · v3.1.0',
     description:

@@ -21,18 +21,23 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
-          node-version: 24
-          package-manager-cache: false
+          node-version: "20"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
       - name: Build Next.js
+        env:
+          GITHUB_ACTIONS: "true"
+          NEXT_PUBLIC_BASE_PATH: "/Urwidgets"
         run: npm run build
 
       - name: Verify static output
@@ -41,7 +46,7 @@ jobs:
           touch out/.nojekyll
 
       - name: Upload website
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
 

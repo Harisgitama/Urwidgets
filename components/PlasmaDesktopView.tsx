@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { withBasePath } from '@/lib/download-release';
 import {
   Sun,
   CloudSun,
@@ -246,41 +247,41 @@ const PHOTO_DIRECTORIES: Record<
 > = {
   '~/Pictures/Wallpapers': [
     {
-      src: '/images/photo_widget_architecture.jpg',
+      src: withBasePath('/images/photo_widget_architecture.jpg'),
       title: 'Warm Timber Studio',
       location: 'Oslo Woodland',
     },
     {
-      src: '/images/photo_widget_botanical.jpg',
+      src: withBasePath('/images/photo_widget_botanical.jpg'),
       title: 'Morning Botanical',
       location: 'Glasshouse Study',
     },
     {
-      src: '/images/alpine_mist_wallpaper.jpg',
+      src: withBasePath('/images/alpine_mist_wallpaper.jpg'),
       title: 'Alpine Dawn',
       location: 'Highland Mist',
     },
   ],
   '~/Pictures/Botanical': [
     {
-      src: '/images/photo_widget_botanical.jpg',
+      src: withBasePath('/images/photo_widget_botanical.jpg'),
       title: 'Morning Botanical',
       location: 'Glasshouse Study',
     },
     {
-      src: '/images/photo_widget_architecture.jpg',
+      src: withBasePath('/images/photo_widget_architecture.jpg'),
       title: 'Warm Timber Studio',
       location: 'Oslo Woodland',
     },
   ],
   '/usr/share/backgrounds': [
     {
-      src: '/images/alpine_mist_wallpaper.jpg',
+      src: withBasePath('/images/alpine_mist_wallpaper.jpg'),
       title: 'Alpine Dawn',
       location: 'Default Desktop',
     },
     {
-      src: '/images/photo_widget_architecture.jpg',
+      src: withBasePath('/images/photo_widget_architecture.jpg'),
       title: 'Warm Timber Studio',
       location: 'Oslo Woodland',
     },
@@ -1089,7 +1090,7 @@ export default function PlasmaDesktopView(props: PlasmaDesktopViewProps) {
       artist: 'Direct Online Audio Stream',
       album: check.normalizedUrl,
       durationSecs: 3600,
-      coverUrl: '/images/photo_widget_botanical.jpg',
+      coverUrl: withBasePath('/images/photo_widget_botanical.jpg'),
       sourceType: 'stream',
       fileOrStreamUrl: check.normalizedUrl,
       format: 'STREAM',
@@ -1146,7 +1147,7 @@ export default function PlasmaDesktopView(props: PlasmaDesktopViewProps) {
         artist: 'Local Audio Path',
         album: trimmed,
         durationSecs: 210,
-        coverUrl: '/images/photo_widget_architecture.jpg',
+        coverUrl: withBasePath('/images/photo_widget_architecture.jpg'),
         sourceType: 'local',
         fileOrStreamUrl: trimmed,
         folderPath: trimmed,
@@ -2162,7 +2163,7 @@ export default function PlasmaDesktopView(props: PlasmaDesktopViewProps) {
         {wallpaperId === 'alpine' && (
           <div className="absolute inset-0 pointer-events-none">
             <Image
-              src="/images/alpine_mist_wallpaper.jpg"
+              src={withBasePath('/images/alpine_mist_wallpaper.jpg')}
               alt="Alpine Mist Desktop Wallpaper"
               fill
               priority

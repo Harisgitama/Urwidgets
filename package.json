@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "tsx --test lib/urwidgets-engine.test.ts",
+    "test": "tsx --test lib/urwidgets-engine.test.ts lib/official-website-data.test.ts",
     "clean": "next clean"
   },
   "dependencies": {

@@ -2513,40 +2513,63 @@ export interface BuiltInBackgroundSample {
   recommendedText: 'light' | 'dark';
 }
 
+function normalizeEngineBasePath(value?: string): string {
+  if (!value) return '';
+  const trimmed = value.trim();
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//')) {
+    return '';
+  }
+  const cleaned = trimmed.replace(/\/+$/, '');
+  if (!cleaned || cleaned === '/') {
+    return '';
+  }
+  if (!/^\/[a-zA-Z0-9._/-]+$/.test(cleaned)) {
+    return '';
+  }
+  return cleaned;
+}
+
+const ENGINE_BASE_PATH = normalizeEngineBasePath(
+  process.env.NEXT_PUBLIC_BASE_PATH
+);
+function engineAssetPath(p: string): string {
+  return `${ENGINE_BASE_PATH}${p}`;
+}
+
 export const BUILT_IN_BACKGROUND_IMAGES: BuiltInBackgroundSample[] = [
   {
     id: 'bg-arch',
     label: 'Autumn Window Study (JPG)',
     format: 'JPG',
-    url: '/images/photo_widget_architecture.jpg',
+    url: engineAssetPath('/images/photo_widget_architecture.jpg'),
     recommendedText: 'light',
   },
   {
     id: 'bg-pastry',
     label: 'Warm Morning Artisan (JPG)',
     format: 'JPG',
-    url: '/images/photo_widget_botanical.jpg',
+    url: engineAssetPath('/images/photo_widget_botanical.jpg'),
     recommendedText: 'light',
   },
   {
     id: 'bg-cozy',
     label: 'Cozy Knit & Coffee (JPG)',
     format: 'JPG',
-    url: '/images/alpine_mist_wallpaper.jpg',
+    url: engineAssetPath('/images/alpine_mist_wallpaper.jpg'),
     recommendedText: 'light',
   },
   {
     id: 'bg-botanical',
     label: 'Nordic Botanical Mist (JPG)',
     format: 'JPG',
-    url: '/images/photo_widget_botanical.jpg',
+    url: engineAssetPath('/images/photo_widget_botanical.jpg'),
     recommendedText: 'light',
   },
   {
     id: 'bg-minimal',
     label: 'Warm Linen Studio (JPG)',
     format: 'JPG',
-    url: '/images/photo_widget_architecture.jpg',
+    url: engineAssetPath('/images/photo_widget_architecture.jpg'),
     recommendedText: 'dark',
   },
   {
@@ -2737,7 +2760,7 @@ export const LOCAL_MUSIC_FOLDERS: LocalMusicFolderPreset[] = [
         artist: 'Klangwerk & Sol',
         album: 'Late Night Focus Sessions',
         durationSecs: 214,
-        coverUrl: '/images/photo_widget_architecture.jpg',
+        coverUrl: engineAssetPath('/images/photo_widget_architecture.jpg'),
         sourceType: 'local',
         fileOrStreamUrl: '/home/mint/Music/Ambient Studio/01-velvet-horizon.flac',
         folderPath: '/home/mint/Music/Ambient Studio',
@@ -2750,7 +2773,7 @@ export const LOCAL_MUSIC_FOLDERS: LocalMusicFolderPreset[] = [
         artist: 'Harbor Ensemble',
         album: 'Nordic Minimalist Vol. 2',
         durationSecs: 188,
-        coverUrl: '/images/photo_widget_botanical.jpg',
+        coverUrl: engineAssetPath('/images/photo_widget_botanical.jpg'),
         sourceType: 'local',
         fileOrStreamUrl: '/home/mint/Music/Ambient Studio/02-warm-linen-rain.mp3',
         folderPath: '/home/mint/Music/Ambient Studio',
@@ -2763,7 +2786,7 @@ export const LOCAL_MUSIC_FOLDERS: LocalMusicFolderPreset[] = [
         artist: 'Mori & The Rhodes',
         album: 'Morning Desk Tape',
         durationSecs: 165,
-        coverUrl: '/images/alpine_mist_wallpaper.jpg',
+        coverUrl: engineAssetPath('/images/alpine_mist_wallpaper.jpg'),
         sourceType: 'local',
         fileOrStreamUrl: '/home/mint/Music/Ambient Studio/03-espresso-sketchbook.ogg',
         folderPath: '/home/mint/Music/Ambient Studio',
@@ -2776,7 +2799,7 @@ export const LOCAL_MUSIC_FOLDERS: LocalMusicFolderPreset[] = [
         artist: 'Sora Takahashi',
         album: 'Kyoto Acoustic Studies',
         durationSecs: 242,
-        coverUrl: '/images/photo_widget_architecture.jpg',
+        coverUrl: engineAssetPath('/images/photo_widget_architecture.jpg'),
         sourceType: 'local',
         fileOrStreamUrl: '/home/mint/Music/Ambient Studio/04-autumn-glass.wav',
         folderPath: '/home/mint/Music/Ambient Studio',
@@ -2796,7 +2819,7 @@ export const LOCAL_MUSIC_FOLDERS: LocalMusicFolderPreset[] = [
         artist: 'Bitshift Collective',
         album: 'Kernel Space Beats',
         durationSecs: 196,
-        coverUrl: '/images/photo_widget_botanical.jpg',
+        coverUrl: engineAssetPath('/images/photo_widget_botanical.jpg'),
         sourceType: 'local',
         fileOrStreamUrl: '/home/mint/Music/Lo-Fi Study Beats/01-midnight-rust.mp3',
         folderPath: '/home/mint/Music/Lo-Fi Study Beats',
@@ -2809,7 +2832,7 @@ export const LOCAL_MUSIC_FOLDERS: LocalMusicFolderPreset[] = [
         artist: 'Cinnamon & Quartz',
         album: 'Linux Mint Sessions',
         durationSecs: 174,
-        coverUrl: '/images/photo_widget_architecture.jpg',
+        coverUrl: engineAssetPath('/images/photo_widget_architecture.jpg'),
         sourceType: 'local',
         fileOrStreamUrl: '/home/mint/Music/Lo-Fi Study Beats/02-plasma-breeze.m4a',
         folderPath: '/home/mint/Music/Lo-Fi Study Beats',
@@ -2827,7 +2850,7 @@ export const SAVED_AUDIO_STREAMS: MusicTrack[] = [
     artist: 'SomaFM Live Stream',
     album: 'Direct Icecast MP3 Stream',
     durationSecs: 3600,
-    coverUrl: '/images/photo_widget_botanical.jpg',
+    coverUrl: engineAssetPath('/images/photo_widget_botanical.jpg'),
     sourceType: 'stream',
     fileOrStreamUrl: 'https://ice2.somafm.com/groovesalad-128-mp3',
     format: 'STREAM',
@@ -2839,7 +2862,7 @@ export const SAVED_AUDIO_STREAMS: MusicTrack[] = [
     artist: 'SomaFM Live Stream',
     album: 'Direct Icecast MP3 Stream',
     durationSecs: 3600,
-    coverUrl: '/images/photo_widget_architecture.jpg',
+    coverUrl: engineAssetPath('/images/photo_widget_architecture.jpg'),
     sourceType: 'stream',
     fileOrStreamUrl: 'https://ice2.somafm.com/dronezone-128-mp3',
     format: 'STREAM',
@@ -2851,7 +2874,7 @@ export const SAVED_AUDIO_STREAMS: MusicTrack[] = [
     artist: 'Direct Audio Stream (.mp3)',
     album: '24/7 Study Stream',
     durationSecs: 3600,
-    coverUrl: '/images/alpine_mist_wallpaper.jpg',
+    coverUrl: engineAssetPath('/images/alpine_mist_wallpaper.jpg'),
     sourceType: 'stream',
     fileOrStreamUrl: 'https://stream.chillhop.com/mp3',
     format: 'MP3 STREAM',

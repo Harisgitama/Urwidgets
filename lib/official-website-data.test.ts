@@ -1,86 +1,129 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  URWIDGETS_PROJECT_IDENTITY,
-  OFFICIAL_NAV_LINKS,
+  OFFICIAL_PRODUCT_IDENTITY,
+  LANDING_NAV_ITEMS,
   PRODUCT_HIGHLIGHTS,
-  OFFICIAL_FEATURES,
+  WIDGET_FEATURES,
+  PERSONALIZATION_CAPABILITIES,
   GALLERY_ITEMS,
-  COMPATIBILITY_TIERS,
-  MINIMUM_DEVICE_REQUIREMENTS,
-  LATEST_CHANGELOG_SUMMARY,
-  filterGalleryItems,
-  getNextLightboxIndex,
+  COMPATIBILITY_DATA,
+  TERMINAL_INSTALLATION_STEPS,
+  resolveLandingAsset,
 } from './official-website-data';
 
-test('project identity contains exact author, repository, and social links', () => {
-  assert.equal(URWIDGETS_PROJECT_IDENTITY.name, 'URWidgets');
+test('Project identity matches exact tagline, release v3.0.2 URL, INSTALL.md URL, and author links', () => {
+  assert.equal(OFFICIAL_PRODUCT_IDENTITY.name, 'URWidgets');
   assert.equal(
-    URWIDGETS_PROJECT_IDENTITY.repoUrl,
+    OFFICIAL_PRODUCT_IDENTITY.tagline,
+    'Your Desktop. Your Widgets. Your Way.'
+  );
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.description,
+    'URWidgets is a customizable Linux desktop widget ecosystem designed to bring productivity, media controls, personalization, and everyday utilities into one cohesive KDE Plasma experience.'
+  );
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.repositoryUrl,
     'https://github.com/Harisgitama/Urwidgets'
   );
-  assert.equal(URWIDGETS_PROJECT_IDENTITY.author, 'Haris Gitama');
-  assert.equal(URWIDGETS_PROJECT_IDENTITY.portfolioUrl, 'https://rissaxie.com');
   assert.equal(
-    URWIDGETS_PROJECT_IDENTITY.instagramUrl,
-    'https://www.instagram.com/hrigtaa_/'
+    OFFICIAL_PRODUCT_IDENTITY.officialReleaseUrl,
+    'https://github.com/Harisgitama/Urwidgets/releases/tag/3.0.2'
   );
-  assert.equal(URWIDGETS_PROJECT_IDENTITY.platform, 'Linux');
-  assert.equal(URWIDGETS_PROJECT_IDENTITY.supportedDesktop, 'KDE Plasma 5');
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.allReleasesUrl,
+    'https://github.com/Harisgitama/Urwidgets/releases'
+  );
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.installGuideUrl,
+    'https://github.com/Harisgitama/Urwidgets/blob/main/INSTALL.md'
+  );
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.officialWebsiteUrl,
+    'https://harisgitama.github.io/Urwidgets/'
+  );
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.latestPublishedReleaseLabel,
+    'Latest Published Release: v3.0.2'
+  );
+  assert.equal(OFFICIAL_PRODUCT_IDENTITY.author.name, 'Haris Gitama');
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.author.portfolioUrl,
+    'https://rissaxie.com'
+  );
+  assert.equal(OFFICIAL_PRODUCT_IDENTITY.author.portfolioLabel, 'rissaxie.com');
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.author.instagramUrl,
+    'https://www.instagram.com/hrisgtaa_/'
+  );
+  assert.equal(OFFICIAL_PRODUCT_IDENTITY.author.instagramLabel, '@hrisgtaa_');
 });
 
-test('navigation bar defines all required sections', () => {
-  const labels = OFFICIAL_NAV_LINKS.map((n) => n.label);
-  assert.deepEqual(labels, [
-    'Home',
-    'Features',
-    'Gallery',
-    'Compatibility',
-    'About',
+test('Navigation bar items match Home, Features, Gallery, Compatibility, and About', () => {
+  assert.deepEqual(
+    LANDING_NAV_ITEMS.map((i) => i.label),
+    ['Home', 'Features', 'Gallery', 'Compatibility', 'About']
+  );
+});
+
+test('Features section defines all 10 implemented URWidgets widget categories and 6 product highlights', () => {
+  assert.equal(WIDGET_FEATURES.length, 10);
+  const titles = WIDGET_FEATURES.map((w) => w.title);
+  assert.deepEqual(titles, [
+    'Clock & Alarms',
+    'Calendar',
+    'Weather',
+    'Pomodoro',
+    'Notes',
+    'Music Player',
+    'To-Do List',
+    'Photo Frame',
+    'Quick Actions',
+    'System Monitor',
   ]);
-});
-
-test('product highlights and features match published scope without Todo List', () => {
-  assert.equal(PRODUCT_HIGHLIGHTS.length, 5);
-  const featureIds = OFFICIAL_FEATURES.map((f) => f.id);
-  assert.deepEqual(featureIds, [
-    'music-player',
-    'alarm',
-    'calendar',
-    'photo-frame',
-    'appearance',
-  ]);
-  const hasTodoFeature = OFFICIAL_FEATURES.some((f) =>
-    f.title.toLowerCase().includes('todo')
+  assert.equal(PRODUCT_HIGHLIGHTS.length, 6);
+  assert.deepEqual(
+    PRODUCT_HIGHLIGHTS.map((h) => h.title),
+    [
+      'Desktop Productivity',
+      'Media Control',
+      'Visual Personalization',
+      'Native Linux Integration',
+      'Shared Rust Core',
+      'Lightweight Architecture',
+    ]
   );
-  assert.equal(hasTodoFeature, false);
+  assert.equal(PERSONALIZATION_CAPABILITIES.length, 6);
+  assert.equal(GALLERY_ITEMS.length, 11);
 });
 
-test('gallery filtering and lightbox index wrapping work deterministically', () => {
-  assert.equal(GALLERY_ITEMS.length, 6);
-  const widgetsOnly = filterGalleryItems(GALLERY_ITEMS, 'widgets');
-  assert.equal(widgetsOnly.length, 4);
-  const allItems = filterGalleryItems(GALLERY_ITEMS, 'all');
-  assert.equal(allItems.length, 6);
-
-  assert.equal(getNextLightboxIndex(0, 6, 'prev'), 5);
-  assert.equal(getNextLightboxIndex(5, 6, 'next'), 0);
-  assert.equal(getNextLightboxIndex(2, 6, 'next'), 3);
-});
-
-test('compatibility section honestly lists KDE Plasma 5 support and unsupported DEs', () => {
-  const unsupported = COMPATIBILITY_TIERS.find(
-    (t) => t.id === 'not-supported'
+test('Compatibility section accurately states KDE Plasma 5 support and lists unsupported desktops', () => {
+  assert.equal(COMPATIBILITY_DATA.supportedTarget.environment, 'KDE Plasma 5');
+  assert.equal(
+    COMPATIBILITY_DATA.supportedTarget.primaryDistro,
+    'Linux Mint with KDE Plasma 5.'
   );
-  assert.ok(unsupported);
-  assert.ok(unsupported.items.includes('KDE Plasma 6'));
-  assert.ok(unsupported.items.includes('GNOME'));
-  assert.ok(unsupported.items.includes('Cinnamon'));
-  assert.ok(unsupported.items.includes('XFCE'));
-
-  const ramReq = MINIMUM_DEVICE_REQUIREMENTS.find(
-    (r) => r.label === 'Minimum RAM'
+  assert.ok(
+    COMPATIBILITY_DATA.notSupportedYet.items.includes('KDE Plasma 6')
+  );
+  assert.ok(COMPATIBILITY_DATA.notSupportedYet.items.includes('GNOME'));
+  assert.ok(COMPATIBILITY_DATA.notSupportedYet.items.includes('Cinnamon'));
+  assert.ok(COMPATIBILITY_DATA.notSupportedYet.items.includes('XFCE'));
+  const ramReq = COMPATIBILITY_DATA.minimumRequirements.items.find(
+    (i) => i.label === 'Minimum RAM'
   );
   assert.equal(ramReq?.value, '8 GB');
-  assert.equal(LATEST_CHANGELOG_SUMMARY.authorWebsite, 'https://rissaxie.com');
+});
+
+test('Terminal installation section provides exact placeholder command and 5 steps', () => {
+  assert.equal(
+    OFFICIAL_PRODUCT_IDENTITY.terminalInstallCommand,
+    'cd ~/Downloads && sudo apt install ./NAMA_FILE_URWIDGETS.deb'
+  );
+  assert.equal(TERMINAL_INSTALLATION_STEPS.length, 5);
+  assert.ok(
+    resolveLandingAsset('/images/gallery/widgetwall-desktop-showcase.png').endsWith(
+      '/images/gallery/widgetwall-desktop-showcase.png'
+    )
+  );
 });
